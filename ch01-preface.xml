@@ -1,0 +1,214 @@
+<!-- =================================================================== -->
+<sect1 id="psm.preface">
+  <title>前言</title>
+  
+  <para>本文来自于笔者最近完成的一个小项目 pySvnManager，源代码已经贡献到开源项目网站
+    SorceForge.net。该项目从一开始，就采用了测试驱动开发（TDD）技术，通过一系列的迭代
+    最终敏捷的实现了预期的需求。</para>
+  
+  <para>在该项目中采用了Python最新流行的MVC框架:
+    Pylons。并在Web页面中大量使用了AJAX技术。本文涉及到的技术术语有：敏捷，TDD，MVC，
+    单元测试，代码覆盖测试，AJAX，重构，i18n，开放源代码。</para>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.preface.background">
+    <title>项目背景</title>
+    
+    <para>Subversion使用配置文件进行基于路径的授权，手工配置易于出错。下面是一个
+      错误百出的配置示例：</para>
+    
+    <blockquote>
+      <screen>
+[groups]
+admin = &amp;admin, admin1, admin2
+group1 = @group2, user1
+group2 = user2, @group1
+
+[aliases]
+admin = jiangxin
+
+[/]
+@admin = rw
+
+[/trunk]
+$authenticated = rw
+
+[repos1:/]
+* =
+user1 =
+@group1 = r
+@admin = rw
+
+[repos1:/trunk/src]
+* =
+@group1 = rw
+@visiters = r
+      </screen>
+    </blockquote>
+    
+    <para>其中的错误或可能的错误有：</para>
+    
+    <orderedlist>
+      <listitem>
+        <para>组的循环引用：group1包含了group2，而group2又反过来包含group1，
+          造成循环引用。</para>
+      </listitem>
+      
+      <listitem>
+        <para>包含未定义的组或者别名：例如在 repos1 版本库的 /trunk/src 
+          的策略中用到了 @visiters 组，而该组没有在[groups]小节中定义；</para>
+      </listitem>
+      
+      <listitem>
+        <para>版本库repos1的根路径，欲限制user1的访问，而实际效果并非如此，
+          因为uer1属于group1组，而group1组被授权。user1实际获得的权限是策略能够给予
+          的最大权限；</para>
+      </listitem>
+      
+      <listitem>
+        <para>访问版本库repos1的 /trunk 目录，会参照缺省的[/trunk]小节设置，
+          这可能跟管理员本意不符。需要对repos1的/trunk重新定义权限以覆盖缺省的
+          [/trunk]小节的设置。</para>
+      </listitem>
+    </orderedlist>
+    
+    <para>其中1和2的错误会造成Subversion服务中断故障！3和4的问题如果不经过测试很难发现！
+      在我们为客户实施Subversion技术支持服务过程中，发现了用户迫切需要容错性强的
+      授权管理工具，于是便有了开发图形化管理界面的打算。选择Python是因为Python语言的魅力
+      以及Python开发过程的高效。</para>
+  
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.preface.implement">
+    <title>最终的实现</title>
+    
+    <para>我们先来看看最终的实现。下面的命令是在Debian Linux下完成，
+      Windows或其他平台，与之类似。</para>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.preface.implement.install">
+      <title>软件安装</title>
+      
+      <para>理论上最简单的安装模式：</para>
+      
+      <screen>
+$ sudo easy_install pySvnManager
+Searching for pySvnManager
+Reading http://pypi.python.org/simple/pySvnManager/
+Reading https://sourceforge.net/projects/pysvnmanager
+</screen>
+
+      <para>理论上的简单的东西，现实当中可能会有些复杂：</para>
+
+      <para>安装过程在进行到访问sourceforge.net以获取pySvnManager最新版本列表时被阻塞。
+        虽然我打算把项目移到别处，但发现一些依赖的包如:
+        python-ldap也是要访问sourceforge.net网站，因此我取消了搬家的打算，默默静等解风。
+        同时将代码镜像在网址：http://svn.worldhello.net/svn/pysvnmanager 上，
+        供不能访问SourceForge.net的用户参考。</para>
+
+      <para>可以使用curl命令或者用浏览器连接到 http://pypi.python.org/simple/pySvnManager/，
+        以查找可下载的pySvnManager软件包：</para>
+      
+      <screen>
+$ curl http://pypi.python.org/simple/pySvnManager/
+&lt;html&gt;&lt;head&gt;&lt;title&gt;Links for pySvnManager&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Links for pySvnManager&lt;/h1&gt;&lt;a href='https://sourceforge.net/projects/pysvnmanager' rel="homepage"&gt;0.1.2dev-r9 home_page&lt;/a&gt;&lt;br/&gt;
+&lt;a href='http://pypi.python.org/packages/2.5/p/pySvnManager/pySvnManager-0.1.2dev_r9-py2.5.egg#md5=f0546558f3974308e0d24bd5195f8694'&gt;pySvnManager-0.1.2dev_r9-py2.5.egg&lt;/a&gt;&lt;br/&gt;
+&lt;a href='http://pypi.python.org/packages/source/p/pySvnManager/pySvnManager-0.1.2dev-r9.tar.gz#md5=eb54172084c67514251dbcfda29f4d23'&gt;pySvnManager-0.1.2dev-r9.tar.gz&lt;/a&gt;&lt;br/&gt;
+</screen>
+
+      <para>看到链接了么？ http://pypi.python.org/packages/2.5/p/pySvnManager/pySvnManager... </para>
+      <para>如果是Python2.5，可以直接安装egg包，如果不是，需要下载源码包。
+        无论源码包还是egg包，都可以方便的使用easy_install进行安装：</para>
+      <screen>
+$ wget http://pypi.python.org/packages/source/p/pySvnManager/pySvnManager... 
+$ sudo easy_install pySvnManager-... 
+</screen>
+
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.preface.implement.deploy">
+      <title>网站部署</title>
+        <para>执行make-config和setup-app完成部署。部署过程的细节参见后面软件集成的相关内容。</para>
+        
+        <screen>
+$ mkdir deploy
+$ cd deploy
+$ paster make-config pySvnManager config.ini
+Distribution already installed:
+pySvnManager 0.1.2dev-r9 from /home/jiangxin/pyenv/lib/python2.5/site-packages/pySvnManager-0.1.2dev_r9-py2.5.egg
+Creating config.ini
+Now you should edit the config files
+config.ini
+$ paster setup-app config.ini
+Running setup_config() from pysvnmanager.websetup
+</screen>
+
+    </sect3>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.preface.implement.config">
+      <title>配置</title>
+      
+      <para>部署目录下的四个配置文件：</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>config.ini ：应用默认运行于5000端口，可以在此文件中定制</para>
+        </listitem>
+        
+        <listitem>
+          <para>config/localconfig.py ：设置应用缺省的认证方式，缺省用config/svn.passwd口令认证</para>
+        </listitem>
+        
+        <listitem>
+          <para>config/svn.passwd ： 缺省该口令文件内所有用户的口令均为 "guess"</para>
+        </listitem>
+        
+        <listitem>
+          <para>config/svn.access ： svn路径授权文件，本应用要处理的文件。
+            注意该文件开头的注释是版本号和版本库管理员帐号设置，不要随意删除！</para>
+        </listitem>
+        
+      </itemizedlist>
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.preface.implement.start">
+      <title>运行应用</title>
+
+      <para>启动应用，自动开启Web服务于5000端口。用Web浏览器访问。推荐使用Firefox。</para>
+
+      <screen>
+$ paster serve config.ini
+Starting server in PID 28937.
+serving on 0.0.0.0:5000 view at http://127.0.0.1:5000 
+</screen>
+    
+    </sect3>
+    
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.preface.implement.snapshot">
+      <title>软件截屏</title>
+      <para>参见演示网站： http://demo.ossxp.com/svnadmin/</para>
+
+
+      <figure id="psm.preface.implement.snapshot.img1">
+        <title>路径授权验证功能</title>
+        <graphic fileref="images/snapshot_check.png"/>
+      </figure>
+
+      <figure id="psm.preface.implement.snapshot.img2">
+        <title>路径授权设置</title>
+        <graphic fileref="images/snapshot_acl.png"/>
+      </figure>
+      
+      <para>下面将整个开发过程予以概要介绍，以了解Python的Web编程框架以及Python的敏捷实践。</para>
+      
+    </sect3>
+  
+  </sect2>
+  
+</sect1>

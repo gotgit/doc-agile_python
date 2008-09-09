@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"   
+	"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY author "<ulink url='mailto:worldhello.net .AT. gmail.com'>蒋鑫</ulink>">
+<!ENTITY orgname "<ulink url='http://www.ossxp.com'>ossxp.com</ulink>">
+<!ENTITY % vers   SYSTEM "version.xml">
+%vers;
+<!ENTITY foreword SYSTEM "foreword.xml">
+<!ENTITY ch01     SYSTEM "ch01-preface.xml">
+<!ENTITY ch02     SYSTEM "ch02-model-tdd.xml">
+<!ENTITY ch03     SYSTEM "ch03-pylons.xml">
+<!ENTITY ch04     SYSTEM "ch04-auth.xml">
+<!ENTITY ch05     SYSTEM "ch05-config.xml">
+<!ENTITY ch06     SYSTEM "ch06-i18n.xml">
+<!ENTITY ch07     SYSTEM "ch07-package.xml">
+<!ENTITY ch08     SYSTEM "ch08-submit.xml">
+<!ENTITY ch09     SYSTEM "ch09-appendix.xml">
+]>
+
+<article id="index">
+  <articleinfo>
+    <title>Python/Pylons 敏捷实践</title>
+    <author><firstname>http://www.ossxp.com</firstname></author>
+    
+    <affiliation>
+      <orgname>&orgname;</orgname>
+      <address><email>worldhello.net＠gmail.com</email></address>
+    </affiliation>
+
+    <revhistory>
+      <revision>
+        <revnumber>0.1</revnumber>
+        <date>2008/07/20</date>
+        <authorinitials>&author;</authorinitials>
+        <revremark>创建。</revremark>
+      </revision>
+    </revhistory>
+
+    <abstract>
+      <para>本文来自于笔者最近完成的一个小项目 pySvnManager，源代码已经贡献到开源项目网站 SorceForge.net。该项目从一开始，就采用了测试驱动开发（TDD）技术，通过一系列的迭代最终敏捷的实现了预期的需求。</para>
+
+      <para>在该项目中采用了Python最新流行的MVC框架: Pylons。并在Web页面中大量使用了AJAX技术。本文涉及到的技术术语有：敏捷，TDD，MVC，单元测试，代码覆盖测试，AJAX，重构，i18n，开放源代码。</para>
+
+      <para>（版本号: 0.1.&doc.revision;，最后更新时间: &doc.lastchange;）</para>
+  </abstract>
+  
+</articleinfo>
+
+&ch01;
+&ch02;
+
+</article>

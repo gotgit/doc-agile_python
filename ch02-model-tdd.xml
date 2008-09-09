@@ -1,0 +1,396 @@
+<!-- =================================================================== -->
+<sect1 id="psm.tdd">
+  <title>模型的敏捷开发</title>
+  
+  <para><emphasis>忘记Web吧：</emphasis></para>
+  
+  <para>我们要开发出一套Web应用，但首先要忘掉Web。这看似矛盾，却正是MVC的要求和精髓。
+    即对核心算法进行抽象，先实现Model，之后再去考虑Controller（控制器）和View（Web展现）。</para>
+  
+  <para><emphasis>忘记详细设计吧：</emphasis></para>
+  
+  <para>敏捷开发，可不要等到图纸都出来再按图索骥。而是一种小步快跑的开发模式，
+    将我们伟大的目标分解为一个一个小的目标，小到能够在一天之内就可以完成。</para>
+  
+  <para><emphasis>先从测试做起：</emphasis></para>
+  
+  <para>敏捷开发的一种是测试先行，让我们在第一个迭代中基于一个最简单的目标：实现单元测试框架。</para>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.tdd.iter1">
+    <title>迭代1：测试框架的建立</title>
+    
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.tdd.iter1.goal">
+      <title>假想任务目标</title>
+      
+      <para>首先为我们的模型起个名字：svnauthz。</para>
+      
+      <para>Subversion路径授权中，用户对象（用户/别名/组）显然是最重要的基本单位，
+        每一条授权策略都包含一个用户对象。那么我们第一个迭代就实现用户对象：
+        User类，Alias类，Group类。</para>
+      
+      <para>假设svnauthz的 User, Alias, Group 类已经完成，我们期望他们实现的功能是什么呢？
+        于是在纸上写下（模拟python交互式命令行）：</para>
+      
+      <screen>
+&gt;&gt;&gt; <emphasis>from svnauthz import User, Group, Alias</emphasis>
+&gt;&gt;&gt; user1=User('Tom')
+&gt;&gt;&gt; user2=User("Jerry")
+&gt;&gt;&gt; print user1
+Tom # 显示 user1 内容（字符串化）
+
+&gt;&gt;&gt; alias1=Alias('admin')
+&gt;&gt;&gt; alias1.user = user1
+&gt;&gt;&gt; print alias1
+admin = Tom # 显示 alias1 内容（字符串化）
+
+&gt;&gt;&gt; group1 = Group('team1')
+&gt;&gt;&gt; group2 = Group('team2')
+&gt;&gt;&gt; group1.append(group2, user2, alias1, user1)
+&gt;&gt;&gt; print group1
+team1 = &amp;admin, @team2, Jerry, Tom # group1 的成员列表要进行排序
+&gt;&gt;&gt; group2.append(group1, user1)
+Exception: ... # 抛出异常! group1 引起了组间的循环引用
+&gt;&gt;&gt; group2.append(group1, user1, autodrop=True)
+&gt;&gt;&gt; print group2
+team2 = Tom # 使用 autodrop 参数，自动抛弃冲突的组成员，而不引发异常。（即容错性）
+</screen>
+
+    </sect3>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.tdd.iter1.unittest.failed">
+      <title>建立测试用例</title>
+      
+      <para>将假想的任务目标翻译为测试用例。建立单元测试文件 test_svnauthz.py 如下：</para>
+      
+      <screen>
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import unittest
+from svnauthz import *
+
+class TestStage1(unittest.TestCase):
+
+    def testUser(self):
+        user1 = User('Tom')
+        self.assert_(str(user1) == 'Tom')
+    
+    def testAlias(self):
+        user1 = User('Tom')
+        alias1=Alias('admin')
+        alias1.user = user1
+        self.assert_(str(alias1) == 'admin = Tom', str(alias1))
+    
+    def testGroup(self):
+        user1 = User('Tom')
+        user2 = User('Jerry')
+        alias1=Alias('admin')
+        alias1.user = user1
+        group1 = Group('team1')
+        group2 = Group('team2')
+        group1.append(group2, user2, alias1, user1)
+        self.assert_(str(group1) == 'team1 = &amp;admin, @team2, Jerry, Tom')
+        self.assertRaises(Exception, group2.append, group1, user1)
+        group2.append(group1, user1, autodrop=True)
+        self.assert_(str(group2) == 'team2 = Tom')
+
+if __name__ == '__main__': unittest.main()
+</screen>
+
+      <para>执行测试用例：</para>
+      
+      <screen>
+$ python test_svnauthz.py
+Traceback (most recent call last):
+  File "test_svnauthz.py", line 8, in &lt;module&gt;
+    from svnauthz import *
+ImportError: No module named svnauthz
+</screen>
+
+      <para>测试失败！不要紧，因为我们还没有写代码呢。</para>
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.tdd.iter1.unittest.pass">
+      <title>编写模组，使测试用例通过</title>
+
+      <para>之前执行测试用例失败，报告：找不到 svnauthz 模组。因为模组还没有创建，当然找不到了。
+        于是创建一个空的模组文件 svnauthz.py。</para>
+      
+      <screen>
+$ touch svnauthz.py
+</screen>
+
+      <para>执行测试用例：</para>
+      
+      <screen>
+$ python test_svnauthz.py
+EEE
+======================================================================
+ERROR: testAlias (__main__.TestStage1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+File "test_svnauthz.py", line 17, in testAlias
+user1 = User('Tom')
+NameError: global name 'User' is not defined
+...
+</screen>
+      
+      <para>太棒了，我们前进了一步，因为失败的原因已经不同了。错误报告说：User类未定义。
+        于是我们写一些代码，让测试用例通过。</para>
+      
+      <para>svnauthz.py第一个版本的代码如下：</para>
+      
+      <screen>
+1 #!/usr/bin/env python
+2 # -*- coding: utf-8 -*-
+3 
+4 """Subversion authz config file management.
+5 
+6 Basic classes used for Subversion authz management.
+7 """
+8 
+9 class User(object):
+10 
+11     def __init__(self, name):
+12         name = name.strip()
+13 
+14         if not name:
+15             raise Exception, 'Username is not provided'
+16 
+17         self.__name = name
+18 
+19     def __str__(self):
+20         return self.__name
+</screen>
+
+      <para>再次执行测试用例：</para>
+      
+      <screen>
+$ python test_svnauthz.py -v
+testAlias (__main__.TestStage1) ... ERROR
+testGroup (__main__.TestStage1) ... ERROR
+testUser (__main__.TestStage1) ... ok
+
+======================================================================
+ERROR: testAlias (__main__.TestStage1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+File "test_svnauthz.py", line 18, in testAlias
+alias1=Alias('admin')
+NameError: global name 'Alias' is not defined
+...
+</screen>
+
+      <para>好的，我们已经有一个测试用例（testUser）通过了！其他的测试用例呢？
+        先把他们注释掉，以便提前感受一下完全通过测试的滋味。</para>
+      
+      <para>注意：我所说的注释掉不是删除代码，也不是把每一行变为注释，
+        而是非常简单的将暂不考虑的测试用例改名。</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>将 def testAlias(self) 改为 def _testAlias(self)</para>
+        </listitem>
+        
+        <listitem>
+          <para>将 def testGroup(self) 改为 def _testGroup(self)</para>
+        </listitem>
+        
+        <listitem>
+          <para>注：只要不是以 test 开头都好。</para>
+        </listitem>
+        
+      </itemizedlist>
+
+      <para>再次执行测试用例，太棒了完全通过！</para>
+      
+      <screen>
+$ python test_svnauthz.py -v
+testUser (__main__.TestStage1) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+</screen>
+
+    </sect3>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.tdd.iter1.code.coverage">
+      <title>完善测试用例</title>
+
+      <para>检查代码覆盖度，在Python下有coverage包可用。用easy_install安装之后，
+        就可以使用coverage命令了。</para>
+      
+      <screen>
+$ coverage -x test_svnauthz.py
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+$ ls .coverage
+.coverage
+$ coverage -r -m svnauthz.py
+Name       Stmts   Exec  Cover   Missing
+----------------------------------------
+svnauthz       8      7    87%   15
+</screen>
+
+      <para>哦，看来我们离完美还是差了一点。从coverage的输出中可以看出，
+        我们的测试用例并没有对svnauthz.py的代码测试完全：第15行没有测试到。
+        也就是用空的用户名创建User对象，应该抛出异常。</para>
+      
+      <para>我们在testUser用例的最后补充一条断言：</para>
+      
+      <screen>
+def testUser(self):
+    user1 = User('Tom')
+    self.assert_(str(user1) == 'Tom')
+    self.assertRaises(Exception, User, " ")
+</screen>
+
+      <para>再次检查一下测试用例对代码的覆盖度。哇，100% 通过！</para>
+
+      <screen>
+$ coverage -x test_svnauthz.py
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK
+$ coverage -r -m svnauthz.py
+Name       Stmts   Exec  Cover   Missing
+----------------------------------------
+svnauthz       8      8   100%
+</screen>
+
+    </sect3>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.tdd.iter1.nosetests">
+      <title>用例管理和nosetests</title>
+
+      <para>目前来讲，代码和测试用例共存于同一个目录。我们重构一下，将模组代码放在 
+        src目录，将测试用例放在 tests 目录。</para>
+      
+      <para>执行测试用例：</para>
+      
+      <screen>
+$ python tests/test_svnauthz.py
+Traceback (most recent call last):
+  File "tests/test_svnauthz.py", line 8, in &lt;module&gt;
+    from svnauthz import *
+ImportError: No module named svnauthz
+</screen>
+
+      <para>在 test_svnauthz.py 文件头增加如下语句，设置Python模组查询路径：</para>
+      
+      <screen>
+import sys
+sys.path.insert(0,'src')
+</screen>
+
+      <para>测试用例又可以成功执行了。</para>
+      
+      <para>tests目录下如果有多个测试用例文件，难道要一个一个去调用么？或者用
+        unittest.TestSuite去组织测试用例？其实不用这么麻烦，nosetests
+        可以自动发现目录下的测试用例，并执行。</para>
+      
+      <para>鼻子测试（nosetests）是一个主动发现测试用例的unittest扩展。
+        可以用easy_install 来安装:</para>
+      
+      <screen>
+$ easy_install nose
+执行nosetests：
+$ nosetests
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.008s
+
+OK
+</screen>
+
+      <para>代码覆盖度测试</para>
+      
+      <screen>
+$ nosetests --with-coverage --cover-package=svnauthz
+.
+Name       Stmts   Exec  Cover   Missing
+----------------------------------------
+svnauthz       8      8   100%
+----------------------------------------------------------------------
+Ran 1 test in 0.030s
+
+OK
+</screen>
+
+      </sect3>
+      
+    </sect2>
+    
+
+    <!-- ================================================================= -->
+    <sect2 id="psm.tdd.continued">
+      <title>持续迭代</title>
+
+      <para>持续迭代，完成User, Group, Alias, Rules, Module, Repos, SvnAuthz等模组。</para>
+      
+    </sect2>
+    
+    <!-- ================================================================= -->
+    <sect2 id="psm.tdd.final">
+      <title>最终完成的svnauthz</title>
+      
+      <para>在Python交互模式下测试svnauthz模组：</para>
+      
+      <screen>
+&gt;&gt;&gt; buff = '''# admin: / = administrator
+... [groups]
+... group1=user1,user2
+... [/]
+... $authenticated=r
+... [/trunk]
+... @group1 = r
+... user3 = rw'''
+&gt;&gt;&gt; import StringIO
+&gt;&gt;&gt; file = StringIO.StringIO(buff)
+&gt;&gt;&gt; authz=SvnAuthz()
+&gt;&gt;&gt; authz.load(file)
+&gt;&gt;&gt; [x.name for x in authz.reposlist]
+['/']
+&gt;&gt;&gt; [x.uname for x in authz.userlist]
+[u'administrator', u'user1', u'user2', u'user3']
+&gt;&gt;&gt; [x.uname for x in authz.userlist]
+[u'administrator', u'user1', u'user2', u'user3']
+&gt;&gt;&gt; [x.uname for x in authz.grouplist]
+[u'@group1', u'$authenticated']
+&gt;&gt;&gt; [x.uname for x in authz.aliaslist]
+[]
+&gt;&gt;&gt; print authz.grouplist
+[groups]
+group1 = user1, user2
+
+&gt;&gt;&gt; print authz.aliaslist
+[aliases]
+&gt;&gt;&gt; authz.is_admin('administrator','/')
+True
+&gt;&gt;&gt; authz.is_admin('administrator','repos1')
+True
+&gt;&gt;&gt; authz.add_rules('/', '/trunk', '&amp;admin=rw; $authenticated=')
+&gt;&gt;&gt; module1 = authz.get_module('/', '/trunk')
+&gt;&gt;&gt; [str(x) for x in module1]
+['@group1 = r', 'user3 = rw', '$authenticated = ', '&amp;admin = rw']
+</screen>
+
+    <para>现在是时候给svnauthz套上一个华丽一点的外衣了。</para>
+    
+  </sect2>
+
+</sect1>
