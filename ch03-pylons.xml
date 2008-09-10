@@ -131,7 +131,12 @@ OK
   <sect2 id="psm.pylons.controller.check">
     <title>控制器check的实现</title>
 
-    <para>控制器check的MVC框架示意图：</para>
+    <sidebar>
+      <figure id="psm.pylons.controller.check.fig1">
+        <title>控制器check的MVC框架示意图</title>
+        <graphic fileref="images/check_controller.png"/>
+      </figure>
+    </sidebar>
     
     <orderedlist>
       <listitem>
@@ -211,8 +216,15 @@ ${c.access_right_msg}
     <sect3 id="psm.pylons.page.design">
       <title>页面模板布局</title>
 
-      <para>Check页面的布局如下：</para>
+      <para>Check页面的布局参见：<xref linkend="psm.pylons.page.design.fig1"/></para>
       
+      <sidebar>
+        <figure id="psm.pylons.page.design.fig1">
+          <title>控制器check的MVC框架示意图</title>
+          <graphic fileref="images/html_design.png"/>
+        </figure>
+      </sidebar>
+    
       <para>各个部分的含义为：</para>
       
       <orderedlist>

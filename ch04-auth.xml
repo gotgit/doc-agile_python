@@ -53,7 +53,14 @@ class CheckController(BaseController):
     <title>Security控制器</title>
  
     <para>Security控制器用于实现用户的登录和退出。要为Security控制器增加
-      login和logout方法，并且增加登录视图模板。流程见下图：</para>
+      login和logout方法，并且增加登录视图模板。流程见：<xref linkend="psm.security.controller.fig1"/></para>
+    
+    <sidebar>
+      <figure id="psm.security.controller.fig1">
+        <title>控制器check的MVC框架示意图</title>
+        <graphic fileref="images/security_controller.png"/>
+      </figure>
+    </sidebar>
     
     <para>具体实现参见代码。</para>
     
