@@ -1,0 +1,123 @@
+<!-- =================================================================== -->
+<sect1 id="psm.i18n">
+  <title>国际化</title>
+  
+  <para>要将软件开源，就需要它能说多种语言。让程序支持多语种，Pylons实现非常简单，
+    用Python的gettext模组实现国际化。</para>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.i18n.gettext">
+    <title>使用_()改写字符串输出</title>
+ 
+    <para>函数_()实际上是gettext模组的 ugettext方法别名。将程序中出现的字符串输出改为
+      _()调用。例如，在模板文件中：</para>
+    
+    <screen>
+<![CDATA[
+<tr>
+    <th>Account</th>
+    <th>Repository</th>
+    <th>Modules</th>
+</tr>
+]]></screen>
+
+    <para>修改为</para>
+    
+    <screen>
+      <![CDATA[
+<tr>
+    <th>${_("Account")}</th>
+    <th>${_("Repository")}</th>
+    <th>${_("Modules")}</th>
+</tr>
+]]></screen>
+
+    <para>控制器代码中：</para>
+    
+    <screen>
+def get_auth_path(self, repos=None, type=None, path=None):
+    ..
+    msg += 'id[0]="%s";' % '...'
+    msg += 'name[0]="%s";\n' % "Please choose..."
+</screen>
+    
+    <para>修改为：</para>
+    
+    <screen>
+def get_auth_path(self, repos=None, type=None, path=None):
+    ..
+    msg += 'id[0]="%s";' % '...'
+    msg += 'name[0]="%s";\n' % _("Please choose...")
+</screen>
+
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.i18n.default">
+    <title>根据浏览器喜好自动选择缺省语种</title>
+
+    <screen>
+from pylons.i18n import set_lang, add_fallback
+
+class BaseController(WSGIController):
+    def __before__(self, action):
+
+        if 'lang' in session:
+            set_lang(session['lang'])
+        for lang in request.languages:
+            if lang in ['zh', 'en']:
+                add_fallback(lang)
+</screen>
+
+  </sect2>
+
+  <!-- ================================================================= -->
+  <sect2 id="psm.i18n.translate">
+    <title>本地化翻译</title>
+
+    <table id="psm.i18n.translate.tbl-1">
+      <title>本地化翻译相关命令</title>
+      <tgroup cols="2">
+        <thead>
+          <row>
+            <entry>任务</entry>
+            <entry>命令</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>提取待翻译字符串，保存为模板文件(*.pot)</entry>
+            <entry>$ python setup.py extract_messages</entry>
+          </row>
+          <row>
+            <entry>根据模板文件，创建本地语种文件(*.po)</entry>
+            <entry><para>$ python setup.py init_catalog -l zh_CN</para>
+              <para>$ python setup.py init_catalog  -l en</para></entry>
+          </row>
+          <row>
+            <entry>翻译*.po文件（工具: kbabel）</entry>
+            <entry>$ kbabel pySvnManager/i18n/zh/LC_MESSAGES/pysvnmanager.po</entry>
+          </row>
+          <row>
+            <entry>编译*.po文件为*.mo文件</entry>
+            <entry>$ python setup.py compile_catalog</entry>
+          </row>
+          <row>
+            <entry>代码中字符串改变，重新提取模板文件(*.pot)</entry>
+            <entry>$ python setup.py extract_messages</entry>
+          </row>
+          <row>
+            <entry>用模板(*.pot)更新各语种的*.po文件</entry>
+            <entry>$ python setup.py update_catalog</entry>
+          </row>
+          <row>
+            <entry>翻译完毕，别忘了编译新的*.mo文件</entry>
+            <entry>$ python setup.py compile_catalog</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+  </sect2>
+  
+</sect1>

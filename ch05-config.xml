@@ -1,0 +1,65 @@
+<!-- =================================================================== -->
+<sect1 id="psm.pylons.config">
+  <title>配置文件</title>
+  
+  <para>为了我们的程序更灵活，就要允许用户对某些设置进行定制，
+    这就是我们这里要探讨的配置文件。</para>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.pylons.config.inifile">
+    <title>Pylons的ini配置文件</title>
+ 
+    <para>在前面我们提到TestController中加入login方法，实现测试用例中的模拟登录。
+      其中代码中出现了 "config.get()"，这是什么呢？</para>
+    
+    <screen>
+if not password:
+    d = eval(config.get('test_users', {}))
+    password = d.get(username,'')
+</screen>
+    
+    <para>其实，config是Pylons读取ini文件创建的数据结构。在test.ini
+      （用于单元测试的Pylons配置）中，包含test_users的配置，
+      为单元测试的用户登录帐号提供默认口令：</para>
+    
+    <screen>
+[app:main]
+...
+# Login test: user account and password
+test_users = {'root':'guess', 'jiangxin':'guess', 'nobody':'guess'}
+...
+</screen>
+
+    <note>
+      <para>注：test.ini的[app:main]小节和[server:main]小节中的设置，
+        代码中可以通过config.get()获取到。</para>
+    </note>
+    
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.pylons.config.localconfig">
+    <title>localconfig.py</title>
+ 
+    <para>Pylons的ini配置文件固然可以囊括程序中的所有可配置信息，
+      但是还是觉得将配置文件写入一个Python文件直接import来得简单。
+      这就是为什么我们程序中还出现了localconfig.py配置文件。</para>
+    
+    <para>localconfig.py是一个从DefaultConfig派生的子类，
+      用户的修改保存在localconfig.py中。</para>
+    
+    <screen>
+# -*- coding: utf-8 -*-
+
+from pysvnmanager.config.DefaultConfig import DefaultConfig
+
+class LocalConfig(DefaultConfig):
+    from pysvnmanager.model.auth.http import htpasswd_login
+    auth = [htpasswd_login]
+</screen>
+
+    <para>这里我们定义了pySvnManager的需要用到的认证插件。</para>
+    
+  </sect2>
+  
+</sect1>

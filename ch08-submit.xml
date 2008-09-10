@@ -1,0 +1,27 @@
+<!-- =================================================================== -->
+<sect1 id="psm.opensource">
+  <title>开源项目提交</title>
+ 
+  <itemizedlist>
+    <listitem>
+      <para>PYPI.python.org</para>
+      <para>PYPI是Python包索引(Python Package Index)的缩写，是Python语言的代码库，
+        相当于Perl的CPAN或者PHP的PEAR。pySvnManager已经提交到PYPI，
+        这样就可以用easy_install下载和安装。</para>
+      <para>网址：http://pypi.python.org/pypi/pySvnManager/ </para>
+    </listitem>
+    
+    <listitem>
+      <para>Sourceforge.net</para>
+      <para>SourceForge.net是最大的开源软件代码库，提供代码托管以及其他项目管理工具。
+        pySvnManager已经上传到SourceForge.net上。</para>
+      <para>项目首页：http://pysvnmanager.sourceforge.net/</para>
+    </listitem>
+    
+    <listitem>
+      <para>代码下载： </para>
+      <para>svn checkout https://pysvnmanager.svn.sourceforge.net/svnroot/pysvnmanager</para>
+    </listitem>
+  </itemizedlist>
+
+</sect1>

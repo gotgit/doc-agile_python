@@ -1,0 +1,116 @@
+<!-- =================================================================== -->
+<sect1 id="psm.pkg">
+  <title>软件集成</title>
+ 
+  <para>Pylons框架开发出来的Web应用，一般是编译成egg包发布。
+    Egg包就像是Java世界里的Jar包。Egg包的编译和管理用到了 
+    Python Enterprise Application Kit（PEAK）的setuptools。
+    setuptools可以视为更好的distutils。</para>
+  
+  <!-- =================================================================== -->
+  <sect2 id="psm.pkg.template">
+    <title>设置 INI 文件模板</title>
+ 
+    <para>当Pylons应用的Egg包安装以后，就可以进行部署了。
+      部署第一步是在部署目录中创建一个INI文件：</para>
+    
+    <screen>
+~/deploy$ paster make-config pySvnManager config.ini
+...
+~/deploy$ ls
+config.ini
+</screen>
+    
+    <para>文件 config.ini从何而来？代码树中的文件：
+      wiki.egg-info/paste_deploy_config.ini_tmpl 就是作为创建新的应用的模板。
+      定制该文件，使其包含pySvnManager应用特有的配置选项。</para>
+    
+  </sect2>
+  
+  <!-- =================================================================== -->
+  <sect2 id="psm.pkg.setup">
+    <title>应用部署的定制</title>
+ 
+    <para>当在部署目录中创建INI文件后，还要执行setup-app命令，以完成应用的部署。</para>
+    
+    <screen>
+~/deploy$ paster setup-app config.ini
+Running setup_config() from pysvnmanager.websetup
+~/deploy$ ls -F
+config/  config.ini
+~/deploy$ find config -type f
+config/localconfig.py
+config/svn.access
+config/svn.passwd
+</screen>
+
+    <para>执行setup-app命令创建的config目录以及文件是从何而来？
+      实际上setup-app命令会执行pySvnManager中的websetup.py文件相应的方法。
+      我们对websetup.py的setup_config方法进行设置，
+      用以初始化应用（拷贝三个配置文件到config目录）。示例如下：</para>
+    
+    <screen>
+def setup_config(command, filename, section, vars):
+    """Place any commands to setup pysvnmanager here"""
+    conf = appconfig('config:' + filename)
+    load_environment(conf.global_conf, conf.local_conf)
+
+    here = config['here']
+
+    if not os.path.exists(here+'/config'):
+        os.mkdir(here+'/config')
+    for f in ['svn.access', 'svn.passwd', 'localconfig.py']:
+        src  = resource_filename('pysvnmanager', 'config/' + f+'.in')
+        dest = here+'/config/' + f
+        if os.path.exists(dest):
+            log.warning("Warning: %s already exist, ignored." % f)
+        else:
+            copyfile(src, dest)
+</screen>
+
+    </sect2>
+    
+    <!-- =================================================================== -->
+    <sect2 id="psm.pkg.meta">
+      <title>编辑版本号等信息</title>
+
+      <para>版本号等信息保存于文件setup.py。</para>
+      
+      <screen>
+setup(
+    name='pySvnManager',
+    version="0.1.2",
+    description='SVN authz web management tools.',
+    author='Jiang Xin',
+    author_email='jiangxin@ossxp.com',
+    url='https://sourceforge.net/projects/pysvnmanager',
+</screen>
+
+    <para>如果代码是保存在SVN中，编译时，还会将SVN的全局版本号作为软件的
+      Build号添加在版本号的后面。</para>
+    
+  </sect2>
+  
+  <!-- =================================================================== -->
+  <sect2 id="psm.pkg.compile">
+    <title>编译</title>
+    
+    <para>创建源码包</para>
+    
+    <screen>
+$ python setup.py sdist
+$ ls dist/
+pySvnManager-0.1.2dev-r14.tar.gz
+</screen>
+
+    <para>创建二进制包</para>
+    
+    <screen>
+$ python setup.py bdist_egg
+$ ls dist/
+pySvnManager-0.1.2dev_r14-py2.5.egg
+</screen>
+
+  </sect2>
+
+</sect1>

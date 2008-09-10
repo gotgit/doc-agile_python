@@ -1,0 +1,110 @@
+<!-- =================================================================== -->
+<sect1 id="psm.security">
+  <title>pySvnAuthz本身的认证和授权</title>
+
+  <!-- ================================================================= -->
+  <sect2 id="psm.security.initial">
+    <title>为BaseController增加__before__()方法</title>
+  
+    <para>__before__是WSGIController 特有的方法，在 Action 执行之前执行，
+      可以用于初始化变量，以及做权限控制。</para>
+    
+    <para>BaseController是所有控制器的基类，在该基类增加授权功能，
+      会自动为其他控制器所使用。BaseController的代码在文件lib/base.py中。</para>
+    
+    <screen>
+class BaseController(WSGIController):
+    requires_auth = []
+
+    def __before__(self, action):
+        if isinstance(self.requires_auth, bool) and not self.requires_auth:
+            pass
+        elif isinstance(self.requires_auth, (list, tuple)) and \
+            not action in self.requires_auth:
+            pass
+        else:
+            if 'user' not in session:
+                session['path_before_login'] = request.path_info
+                session.save()
+                return redirect_to(h.url_for(controller='security'))
+</screen>
+
+    <para>从BaseController继承的类，可以设置requires_auth来增加授权。
+      requires_auth可以为True或者是一个包含要进行授权的动作列表。如果需要授权，
+      会检查session中是否包含登录信息否则跳转到登录页面（security控制器）。</para>
+    
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.security.enable">
+    <title>为控制器中增加授权</title>
+    
+    <para>在需要增加授权的控制器中增加requires_auth的属性。</para>
+    
+    <screen>
+class CheckController(BaseController):
+    requires_auth = True
+</screen>
+
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.security.controller">
+    <title>Security控制器</title>
+ 
+    <para>Security控制器用于实现用户的登录和退出。要为Security控制器增加
+      login和logout方法，并且增加登录视图模板。流程见下图：</para>
+    
+    <para>具体实现参见代码。</para>
+    
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.security.authz">
+    <title>pySvnAuthz授权</title>
+
+    <para>因为我们已经扩展了svn authz 文件，为版本库增加了管理员设置，所以当用户登录后，
+      只要和管理员帐号做比较就可以实现授权。具体参见代码。</para>
+    
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.security.unittest">
+    <title>添加认证后的单元测试</title>
+
+    <para>添加授权后，执行nosetests，会发现控制器的单元测试报错。
+      因为没有经过授权所有页面的输出都是“尚未授权”。实际上，
+      只要在每一个测试用例运行之前，访问 security控制器的login方法，
+      以实现登录，设置正确的session，则后续访问会自动带上cookie，
+      得到正确的授权页面。</para>
+    
+    <para>在控制器的测试用例基类TestController中加上login方法，以简化登录调用：</para>
+    
+    <screen>
+class TestController(TestCase):
+    ...
+    def login(self, username, password=""):
+        res = self.app.get(url_for(controller='security'))
+        form = res.forms[0]
+        form['username'] = username
+        if not password:
+            d = eval(config.get('test_users', {}))
+            password = d.get(username,'')
+        form['password'] = password
+        form.submit()
+</screen>
+
+    <para>在测试用例中调用login方法：</para>
+    
+    <screen>
+<![CDATA[
+self.login('root')
+res = self.app.get(url_for(controller='check')) 
+assert res.status == 200 
+assert '''<input type="submit" name="submit" value='Check Permissions'>''' in res.body 
+assert res.c.reposlist == ['/', u'repos1', u'repos2', u'repos3', u'document']
+]]></screen>
+  
+  </sect2>
+  
+</sect1>

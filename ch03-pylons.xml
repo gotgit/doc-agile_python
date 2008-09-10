@@ -1,0 +1,699 @@
+<!-- =================================================================== -->
+<sect1 id="psm.pylons">
+  <title>华丽外衣——Pylons造</title>
+  
+  <para>在接触Pylons和其他MVC框架之前，对Pythons的Web编程一直感到比较恐惧，
+    因为看过MoinMoin的代码，要为每一种协议（CGI, FastCGI, mod_python,
+    WSGI）写相应的处理代码，实在是麻烦透顶。还好有了Pylons等Web编程框架，
+    为我们屏蔽掉协议一层的复杂度。</para>
+  
+  <para>Pylons实现了MVC架构，在使用习惯上和ROR非常类似，因此从学习成本上考虑，
+    我选择了Pylons。</para>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.pylons.basic">
+    <title>建立Web应用框架</title>
+
+    <para>我们的应用定名为pySvnManager。建立同名的Pylons框架：</para>
+    
+    <screen>
+$ paster create -t pylons pySvnManager
+$ cd pySvnManager
+$ ls -F
+development.ini  docs/  MANIFEST.in  pysvnmanager/  pySvnManager.egg-info/  README.txt  setup.cfg  setup.py  test.ini
+</screen>
+
+    <para>启动Web应用：</para>
+    
+    <screen>
+$ paster serve --reload development.ini
+Starting subprocess with file monitor
+Starting server in PID 817.
+serving on 0.0.0.0:5000 view at http://127.0.0.1:5000
+</screen>
+
+    <para>用浏览器访问 http://127.0.0.1:5000 会看到一个网页。这个网页实际上调用的是 
+      public/index.html 文件。如果删除该文件，则浏览器显示404错误（网页未找到）。</para>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.basic.controller">
+      <title>理解控制器</title>
+      
+      <para>下面用命令创建控制器check，会产生两个文件，一个是控制器文件本身：
+        controllers/check.py，另外一个是单元测试文件：tests/functional/test_check.py。</para>
+      
+      <screen>
+$ paster controller check
+Creating /home/jiangxin/pyenv/pySvnManager/pysvnmanager/controllers/check.py
+Creating /home/jiangxin/pyenv/pySvnManager/pysvnmanager/tests/functional/test_check.py
+</screen>
+
+      <para>用浏览器访问URL：http://127.0.0.1:5000/check/ 会看到Hello World。
+        我们追根溯源，会看到controllers/check.py中的代码：</para>
+      
+      <screen>
+class CheckController(BaseController):
+
+    def index(self):
+        return 'Hello World'
+</screen>
+      
+      <para>哦，原理如此。Pylons已经将URL到代码的映射搞定！就是将浏览器对URL
+        的访问映射到控制器代码，再由控制器处理后将结果显示给浏览器。
+        控制器调用实现逻辑（即Model），然后把从Model获取的结果填充到模板（View）中，
+        于是MVC便实现了逻辑和展现分离。Pylons框架实现的将URL映射到控制器代码，
+        和Windows下VC/Delphi等GUI编程中将事件（鼠标、按钮等）映射到对应的代码是多么的近似。</para>
+      
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.basic.routing">
+      <title>修改控制器映射</title>
+      
+      <para>还记得我们已经删除了public/index.html文件么？我们现在通过修改控制器映射，
+        将Web应用的缺省首页指向我们新建立的controller。
+        要修改的文件就是： config/routing.py</para>
+      
+      <screen>
+20 map.connect('', controller='check', action='index')
+21 map.connect(':controller/:action/:id')
+22 map.connect('*url', controller='template', action='view')
+</screen>
+
+      <para>第20行是我们新增的，告诉Pylons，将缺省的主页定位到名为check的控制器的
+        index方法（动作）。</para>
+      
+      <para>我们打开浏览器访问 http://127.0.0.1:5000/ 会自动定位到 
+        http://127.0.0.1:5000/check/index 。</para>
+      
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.basic.model">
+      <title>加入模组和单元测试</title>
+
+      <para>把我们已经开发完毕的svnauthz模组及其单元测试放到pySvnManager的代码树中，
+        因为svnauthz和pySvnManager的耦合很紧，没有必要单独维护svnauthz模组。</para>
+      
+      <para>pysvnauthz/model 目录是放置模组的地方，将svnauthz的模组放在该目录下。</para>
+      
+      <para>至于单元测试用例，则应该拷贝到pysvnmanager/tests 目录下。该目录下有文件 
+        test_models.py，就是用于测试模组的。我们先参考 test_models.py 
+        文件的格式改造我们原来的模组测试用例test_svnauthz.py，之后再覆盖掉 
+        test_models.py 文件。新的模组单元测试框架形如：</para>
+      
+      <screen>
+1 #!/usr/bin/env python
+2 # -*- coding: utf-8 -*-
+3 from pysvnmanager.tests import *
+4 from pysvnmanager import model
+5 from pysvnmanager.model.svnauthz import *
+</screen>
+
+      <para>其中第五行是新增的。</para>
+      
+      <para>实验一下nosetests是否依然可靠运行。</para>
+      
+      <screen>
+$ nosetests
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 0.546s
+
+OK
+</screen>
+
+    </sect3>
+  
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.pylons.controller.check">
+    <title>控制器check的实现</title>
+
+    <para>控制器check的MVC框架示意图：</para>
+    
+    <orderedlist>
+      <listitem>
+        <para>路由：用户访问URL或提交表单，由Pylons负责将请求路由至控制器中的同名方法；</para>
+      </listitem>
+      
+      <listitem>
+        <para>调用模组：控制器访问模组svnauthz的相关调用，调用结果返回给控制器；</para>
+      </listitem>
+      
+      <listitem>
+        <para>调用视图：调用视图模板，并向其传递参数用于填充模板；</para>
+      </listitem>
+      
+      <listitem>
+        <para>模板展现：最终填充后的模板发向浏览器，最终展现给用户；</para>
+      </listitem>
+  
+    </orderedlist>
+
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.framework.workflow">
+      <title>MVC中的数据流</title>
+
+      <!-- ============================================================= -->
+      <sect4 id="psm.pylons.user.to.controller">
+        <title>控制器获取用户请求</title>
+
+        <para>无论用户使用POST或者GET方式传递请求，都可以用request.params获取。</para>
+        
+        <screen>
+d = request.params  # request.params 是包含用户传参的dict
+
+if d.get('userinput') == 'manual':
+    username = d.get('username')     # 从文本框获取用户手工输入的用户名
+else:
+    username = d.get('userselector') # 从下拉框选择的用户名
+</screen>
+
+      </sect4>
+
+      <!-- ============================================================= -->
+      <sect4 id="psm.pylons.controller.to.template">
+        <title>控制器向视图模板传参</title>
+
+        <screen>
+c.access_map_msg ="&lt;pre&gt;"
+c.access_map_msg+="\n\n".join(self.authz.get_access_map_msgs(username, repos))
+c.access_map_msg+="&lt;/pre&gt;"
+return render('/check/index.mako')
+</screen>
+
+
+      </sect4>
+
+      <!-- ============================================================= -->
+      <sect4 id="psm.pylons.template.var">
+        <title>视图模板用参数填充</title>
+        
+        <screen>
+
+  &lt;input type="submit" name="submit" value="提交"&gt;
+${h.end_form()}
+  
+&lt;hr&gt;
+${c.access_right_msg}
+&lt;pre&gt;
+  ${c.access_map_msg}
+&lt;/pre&gt;
+</screen>
+
+      </sect4>
+      
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.page.design">
+      <title>页面模板布局</title>
+
+      <para>Check页面的布局如下：</para>
+      
+      <para>各个部分的含义为：</para>
+      
+      <orderedlist>
+        <listitem>
+          <para>
+            用户选择/输入框：选择或输入用户对象名称，可以为组、别名或用户名；
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            版本库选择/输入框：当选定一个版本库后，会更新③部分的授权路径列表；
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            授权路径选择/输入框：列表内容和版本库（②）相关；
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            权限检查按钮
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            结果输出
+          </para>
+        </listitem>
+
+      </orderedlist>
+      
+      <note>
+        <para>其中：③和⑤是动态内容，②和④会触发表单提交。</para>
+      </note>
+      
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.template.basic">
+      <title>模板语法示例</title>
+
+      <para>Pylons缺省使用mako格式的模板。mako文件相当于ASP,PHP,JSP,
+        不过是Python语言的。模板文件的主体依旧是HTML，可以在模板中用“&lt;% %&gt;”
+          语法嵌入Python代码。例如：</para>
+
+      <screen>
+&lt;%
+userlist = [[u'请选择...', '...'],
+            [u'所有用户（含匿名）', '*'],
+            [u'注册用户', '$authenticated'],
+            [u'匿名用户', '$anonymous'],]
+for i in c.userlist:
+    if i == '*' or i =='$authenticated' or i == '$anonymous':
+        continue
+    if i[0] == '@':
+        userlist.append([u'团队:'+i[1:], i])
+    elif i[0] == '&amp;':
+        userlist.append([u'别名:'+i[1:], i])
+    else:
+        userlist.append([i, i])
+
+reposlist = [[u'请选择...', '...'], [u'所有版本库', '*'], [u'缺省', '/'],]
+for i in c.reposlist:
+    if i == '/':
+        continue
+    reposlist.append([i, i])
+
+pathlist = [[u'所有路径...', '*'],]
+for i in c.pathlist:
+    pathlist.append([i, i])
+%&gt;
+</screen>
+
+      <para>可以用“${expression}”将页面Python代码的或者Controller
+        传递的变量/表达式的值直接嵌入到模板中输出。例如：</para>
+      
+      <screen>
+&lt;input type="radio" name="reposinput" value="select" 
+       ${c.checked_reposinput_select}&gt; 选择代码库
+  &lt;select name="reposselector" size="0" onFocus="select_repos(this.form)"&gt;
+    ${h.options_for_select(reposlist, c.selected_repos)}
+  &lt;/select&gt;
+</screen>
+
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.controller.method.index">
+      <title>控制器的index方法</title>
+
+      <screen>
+class CheckController(BaseController):
+    
+    def __init__(self):
+        self.authz = SvnAuthz(cfg.authz_file)
+        c.reposlist = map(lambda x:x.name, self.authz.reposlist)
+        c.userlist = map(lambda x:x.uname, self.authz.grouplist)
+        c.userlist.extend(map(lambda x:x.uname, self.authz.aliaslist))
+        c.userlist.extend(map(lambda x:x.uname, self.authz.userlist))
+        c.pathlist = []
+    
+    def index(self):
+        return render('/check/index.mako')
+</screen>
+
+      </sect3>
+      
+      <!-- =============================================================== -->
+      <sect3 id="psm.pylons.controller.method.submit">
+        <title>控制器的submit方法</title>
+
+        <screen>
+class CheckController(BaseController):
+    ...
+    def submit(self):
+        d=request.params
+        # 从 request.params 中获取用户名、版本库名、路径等
+        if d['reposinput'] == 'manual':
+            repos = d['reposname']
+        else:
+            repos = d['reposselector']
+        # 略去参数解析
+        ...
+        # 通过上下文对象传递Model返回值
+        c.access_map_msg ="&lt;pre&gt;"
+        c.access_map_msg+="\n\n".join(self.authz.get_access_map_msgs(username, repos))
+        c.access_map_msg+="&lt;/pre&gt;"
+        # 调用并返回填充后的视图模板
+        return render('/check/index.mako')
+</screen>
+
+    </sect3>
+    
+  </sect2>
+
+  <!-- ================================================================= -->
+  <sect2 id="psm.pylons.ajax">
+    <title>用AJAX取代传统的form提交</title>
+    
+    <orderedlist>
+      <listitem>
+        <para>
+          为什么用AJAX？
+        </para>
+        <para>
+          使用AJAX，用户对Web的体验会更“敏捷”：数据提交页面不会闪屏；页面局部更新速度快；网络带宽占用低。
+        </para>
+      </listitem>
+      
+      <listitem>
+        <para>
+          AJAX开发相较传统模式的简单之处：
+        </para>
+        <para>
+          传统模式下，表单提交则整个页面重绘，为了维持页面用户对表单的状态改变，要多些不少代码。
+          要在控制器和模板之间传递更多参数以保持页面状态。而AJAX不然，因为页面只是局部更新，
+          不关心也不会影响页面其他部分的内容。
+        </para>
+      </listitem>
+      
+      <listitem>
+        <para>
+          AJAX开发相较传统模式的难度：
+        </para>
+        <para>
+          需要了解、精通JavaScript，而JavaScript存在调试麻烦、浏览器兼容性等很多障碍。
+        </para>
+      </listitem>
+      
+    </orderedlist>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.ajax.framework">
+      <title>启用Prototype的JavaScript框架</title>
+
+      <para>Prototype是一个JavaScript框架，可以更加容易的使用AJAX实现动态Web。
+        Pylons内置了prototype脚本。如果想要启用Pylons自带prototype 
+        的JavaScript框架，只要在模板中嵌入如下WebHelpers语句：</para>
+      
+      <screen>
+<![CDATA[
+<html>
+  <head>
+    ${h.javascript_include_tag(builtins=True)}
+]]></screen>
+        
+        <para>实际上会在页面中产生下面两个JavaScrip包含语句：</para>
+        
+        <screen>
+<![CDATA[
+    <script src="/javascripts/prototype.js" type="text/javascript"></script> 
+    <script src="/javascripts/scriptaculous.js" type="text/javascript"></script>
+]]></screen>
+  
+    </sect3>
+    
+    
+    <!-- ============================================================= -->
+    <sect3 id="psm.pylons.ajax.cgi">
+      <title>改造CGI（controller）</title>
+
+      <para>改造之后的CGI（controller的action）不再返回整个页面，
+        而是返回局部的需要动态更新的内容，或者是返回一段数据供页面中的
+        JavaScript解析使用。</para>
+      
+      <para>需要把原来返回一个整个页面的CGI(一个controller的一个方法)改造成多个CGI
+        （多个方法）以针对不同情况返回不同的动态内容。</para>
+      
+      <para>例如：pySvnManager的check控制器的submit方法实际上要处理两种情况：
+        一个是当选定一个版本库时要更新页面中的路径列表项（因为不同的版本库定义了不同的授权路径），
+        另外一个是按下“检查权限”按钮要进行的表单提交，显示用户授权信息。
+        将check控制器的submit方法改造为AJAX实现，就需要一分为二。</para>
+      
+    </sect3>
+    
+    <!-- ============================================================= -->
+    <sect3 id="psm.pylons.ajax.webpage">
+      <title>页面模板充分利用DOM 和JavaScript</title>
+
+      <para>页面要动态更新的内容封装在一个DOM容器中；</para>
+      
+      <para>页面提交修改为执行一个JavaScript函数，该函数调用Ajax.Updater或者Ajax.Request函数；</para>
+    
+    </sect3>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.ajax.sample1">
+      <title>改造示例一：用Ajax.Updater直接进行区域更新</title>
+
+      <para>当点击权限检查（④）按钮，原来的实现是直接进行表单的提交，
+        修改之后为执行一段JavaScript代码。</para>
+      
+      <para>文件 check/index.mako 中用WebHelpers.rails的form_remote_tag
+        快速创建了一个Ajax Form。</para>
+      
+      <screen>
+<![CDATA[
+## AJAX Form
+<%
+  context.write( 
+      h.form_remote_tag(
+          html={'id':'main_form'}, 
+          url=h.url(action='access_map'), 
+          update=dict(success="acl_msg", failure="acl_error"), 
+          method='post', before='showNoticesPopup()',
+          complete='hideNoticesPopup();'+h.visual_effect("Highlight", "acl_msg", duration=1),
+      )
+  )
+%>
+]]></screen>
+
+      <para>出现在页面中，则是如下的代码：</para>
+      
+      <screen>
+<![CDATA[
+<form action="/check/access_map" id="main_form" method="POST" onsubmit="showNoticesPopup(); 
+      new Ajax.Updater({success:'acl_msg', failure:'acl_error'}, '/check/access_map', 
+        {asynchronous:true, evalScripts:true, method:'post', onComplete:function(request) 
+          {hideNoticesPopup(); new Effect.Highlight(&quot;acl_msg&quot;,{duration:1}); }, 
+          parameters:Form.serialize(this)}); 
+      return false;">
+]]></screen>
+
+      <para>说明</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>
+            当Form提交会执行onSubmit部分的代码，而不去执行Form action，因为onSubmit返回false;
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            Ajax.Updater的参数success，是成功执行后用返回信息填充的DOM容器；failure则相反；
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            '/check/access_map'是Ajax要执行的服务器CGI，其返回结果将用于填充相应的DOM容器；
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            onComplete是成功执行Ajax.Updater代码后要执行的JavaScript代码；
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            showNoticesPopup()：弹出窗口，提示用户Ajax正在执行过程中，避免用户重复点击；
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            hideNoticesPopup()：在Ajax执行完毕，关闭Ajax正在运行的提示窗口；
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            Effect.Highlight()是 scriptaculous.js提供的特效，闪烁更新的区域以引起注意；
+          </para>
+        </listitem>
+        
+        <listitem>
+          <para>
+            parameters是用于传递参数，这里把整个表单的数据提交；
+          </para>
+        </listitem>
+      </itemizedlist>
+      
+    </sect3>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.ajax.sample2">
+      <title>改造示例二：用Ajax.Request获取并处理数据</title>
+
+      <para>当从版本库下拉框(②)选择时，将触发更新授权路径的列表(③)。
+        原来的实现是提交整个表单并刷新整个页面，用AJAX改造后，
+        只更新授权路径的列表(③)部分。</para>
+      
+      <para>虽然也可以用Ajax.Updater来更新整个授权路径列表，但为了演示另外一种Ajax处理方式，
+        以及获得更少的带宽占用和更快的响应，使用Ajax.Request来实现。</para>
+      
+      <para>版本库下拉框(②)更新时，执行JavaScript函数：update_path()，而非提交表单：</para>
+      
+      <screen>
+        <![CDATA[
+<input type="radio" name="reposinput" value="select" Checked onClick="update_path(this.form)">
+]]></screen>
+
+      <para>函数update_path()，执行Ajax.Request，从"get_auth_path"这个action获取信息，
+        并用返回值(request.reponseText)为参数调用JavaScript函数ajax_update_path。</para>
+      
+      <screen>
+<![CDATA[
+function update_path(form)
+{
+    var repos = "";
+    if (form.reposinput[0].checked) {
+        repos = form.reposselector.options[form.reposselector.selectedIndex].value;
+    } else {
+        repos = form.reposname.value;
+    }
+    var params = {repos:repos};
+    showNoticesPopup();
+    new Ajax.Request(
+        '${h.url_for(controller="check", action="get_auth_path")}', 
+        {asynchronous:true, evalScripts:true, method:'post',
+            onComplete:
+                function(request) 
+                { hideNoticesPopup();
+                  ajax_update_path(request.responseText);},
+            parameters:params
+        });
+}
+]]></screen>
+
+      <para>函数ajax_update_path()，解析参数code，更新授权路径的下拉列表框。
+        本例非常简单，直接将参数(code)当作JavaScript代码并执行(eval函数)，
+        这是因为Ajax.Request获取到的内容是字符串格式的JavaScript代码。
+        最终这些JavaScript代码在函数ajax_update_path中被执行，
+        并用相应的数据更新了授权路径的列表(③)。</para>
+      
+      <screen>
+<![CDATA[
+function ajax_update_path(code)
+{
+    var id = new Array();
+    var name = new Array();
+    var total = 0;
+    
+    pathselector = document.forms[0].pathselector;
+    lastselect = pathselector.value;
+    pathselector.options.length = 0;
+    
+    try {
+        eval(code);
+        for (var i=0; i < total; i++)
+            {
+                pathselector.options[i] = new Option(name[i], id[i]);
+                if (id[i]==lastselect)
+                pathselector.options[i].selected = true;
+            }
+    }
+    catch(exception) {
+      alert(exception);
+    }
+}
+]]></screen>
+        
+    </sect3>
+    
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.pylons.controller.unittest">
+    <title>控制器的单元测试</title>
+
+    <para>每一个控制器，在tests/functional</para>
+    
+    <para>目录下都一个对应的单元测试文件。Pylons的单元测试是使用paste.fixture
+      来模拟浏览器对Web服务器的访问，通过对返回结果的检查实现测试。</para>
+    
+    <para>测试用例的运行，还是使用nosetests，nosetests能够主动到tests目录下发现测试用例，
+      并运行。</para>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.nosetest">
+      <title>配置nosetests</title>
+
+      <para>在setup.cfg文件中，对nosetests进行设置。可以设置采用不同的pylons配置文件。</para>
+      
+      <screen>
+[nosetests]
+verbose=True
+verbosity=2
+with-pylons=test.ini # 使用test.ini作为pylons的配置文件
+detailed-errors=1
+#with-doctest=1      # 不进行 doctest测试，因为依赖的confobj包的doctest不通过
+</screen>
+
+    </sect3>
+    
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.controller.unittest.sample1">
+      <title>测试示例一</title>
+
+      <screen>
+<![CDATA[
+res = self.app.get(url_for(controller='check')) 
+assert res.status == 200 
+assert '''<input type="submit" name="submit" value='Check Permissions'>''' in res.body 
+assert res.c.reposlist == ['/', u'repos1', u'repos2', u'repos3', u'document']
+]]></screen>
+
+    </sect3>
+
+    <!-- =============================================================== -->
+    <sect3 id="psm.pylons.controller.unittest.sample2">
+      <title>测试示例二</title>
+  
+      <screen>
+<![CDATA[
+params = {
+         'userinput':'select', 
+         'userselector':'user1',
+         'reposinput':'select', 
+         'reposselector':'repos1',
+         'pathinput':'manual',
+         'pathname':'/trunk/src/test',
+         'abbr':'True',
+         }
+res = self.app.get(url_for(controller='check', action='access_map'), params)
+assert res.status == 200
+assert '''<div id='acl_path_msg'>[repos1:/trunk/src/test] user1 =</div>''' in res.body, res.body
+]]></screen>
+
+    </sect3>
+
+  </sect2>
+  
+  <!-- ================================================================= -->
+  <sect2 id="psm.pylons.controller.others">
+    <title>实现其他的控制器</title>
+    
+    <para>Check控制器完成之后，进而对role和authz控制器进行开发，
+      分别实现角色控制和授权管理的功能。在开发新的控制器过程中，我们还依然采取：
+      模板(视图)设计，控制器设计，单元测试的流程。</para>
+    
+    <para>当完成所有的三个控制器之后，会发现似乎少了些什么？
+      难道要任何人都可以查看SVN版本库的授权甚至修改版本库授权么？
+      我们需要为pySvnManager增加认证和授权管理。</para>
+  </sect2>
+</sect1>
