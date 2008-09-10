@@ -37,9 +37,8 @@
     </revhistory>
 
     <abstract>
-      <para>本文来自于笔者最近完成的一个小项目 pySvnManager，源代码已经贡献到开源项目网站 SorceForge.net。该项目从一开始，就采用了测试驱动开发（TDD）技术，通过一系列的迭代最终敏捷的实现了预期的需求。</para>
-
-      <para>在该项目中采用了Python最新流行的MVC框架: Pylons。并在Web页面中大量使用了AJAX技术。本文涉及到的技术术语有：敏捷，TDD，MVC，单元测试，代码覆盖测试，AJAX，重构，i18n，开放源代码。</para>
+      <para>敏捷也许就是保障项目成功的“银弹”。笔者通过最近完成的一个小项目切身体验了一下
+        Python 语言在Web敏捷开发上的强大力量，愿与您共享。</para>
 
       <para>（版本号: 0.1.&doc.revision;，最后更新时间: &doc.lastchange;）</para>
   </abstract>

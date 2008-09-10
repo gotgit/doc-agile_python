@@ -12,8 +12,7 @@
     <para>函数_()实际上是gettext模组的 ugettext方法别名。将程序中出现的字符串输出改为
       _()调用。例如，在模板文件中：</para>
     
-    <screen>
-<![CDATA[
+    <screen><![CDATA[
 <tr>
     <th>Account</th>
     <th>Repository</th>
@@ -23,8 +22,7 @@
 
     <para>修改为</para>
     
-    <screen>
-      <![CDATA[
+    <screen><![CDATA[
 <tr>
     <th>${_("Account")}</th>
     <th>${_("Repository")}</th>
@@ -91,8 +89,7 @@ class BaseController(WSGIController):
           </row>
           <row>
             <entry>根据模板文件，创建本地语种文件(*.po)</entry>
-            <entry><para>$ python setup.py init_catalog -l zh_CN</para>
-              <para>$ python setup.py init_catalog  -l en</para></entry>
+            <entry>$ python setup.py init_catalog -l zh_CN</entry>
           </row>
           <row>
             <entry>翻译*.po文件（工具: kbabel）</entry>

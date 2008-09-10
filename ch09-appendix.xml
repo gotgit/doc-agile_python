@@ -1,60 +1,59 @@
 <!-- =================================================================== -->
-<sect1 id="psm.reference">
+<appendix id="psm.reference">
+  
   <title>参考资料</title>
 
   <orderedlist>
     <listitem>
       <para>
-        pySvnManager 演示: http://demo.ossxp.com/svnadmin/
+        pySvnManager 演示: <ulink url="http://demo.ossxp.com/svnadmin/"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        pySvnManager 代码镜像: http://svn.worldhello.net/svn/pysvnmanager
+        pySvnManager 代码镜像: <ulink url="http://svn.worldhello.net/svn/pysvnmanager"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        pySvnManager项目首页: http://sourceforge.net/projects/pySvnManager
+        pySvnManager项目首页: <ulink url="http://pySvnManager.sourceforge.net/"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        《Python 学习笔记》参见: http://worldhello.net/wiki/Python
+        《Python 学习笔记》参见: <ulink url="http://worldhello.net/wiki/Python"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        Pylons Wiki：http://wiki.pylonshq.com/
+        Pylons Wiki：<ulink url="http://wiki.pylonshq.com/"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        Pylons 文档：http://docs.pylonshq.com/index.html
+        Pylons 文档：<ulink url="http://docs.pylonshq.com/index.html"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        Mako模板文档: http://www.makotemplates.org/docs/documentation.html
+        Mako模板文档: <ulink url="http://www.makotemplates.org/docs/documentation.html"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        Prototype JavaScript 参见: http://www.prototypejs.org/api/ajax
+        Prototype JavaScript 参见: <ulink url="http://www.prototypejs.org/api/ajax"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        Scriptaculous JavaScript特效参见: http://wiki.script.aculo.us/
+        Scriptaculous JavaScript特效参见: <ulink url="http://wiki.script.aculo.us/"/>
       </para>
     </listitem>
     <listitem>
       <para>
-        Setuptools文档: http://peak.telecommunity.com/DevCenter/setuptools
+        Setuptools文档: <ulink url="http://peak.telecommunity.com/DevCenter/setuptools"/>
       </para>
     </listitem>
   </orderedlist>
   
-</sect1>
-
-
+</appendix>

@@ -17,16 +17,16 @@
     <para>我们的应用定名为pySvnManager。建立同名的Pylons框架：</para>
     
     <screen>
-$ paster create -t pylons pySvnManager
-$ cd pySvnManager
-$ ls -F
+$ <emphasis>paster create -t pylons pySvnManager</emphasis>
+$ <emphasis>cd pySvnManager</emphasis>
+$ <emphasis>ls -F</emphasis>
 development.ini  docs/  MANIFEST.in  pysvnmanager/  pySvnManager.egg-info/  README.txt  setup.cfg  setup.py  test.ini
 </screen>
 
     <para>启动Web应用：</para>
     
     <screen>
-$ paster serve --reload development.ini
+$ <emphasis>paster serve --reload development.ini</emphasis>
 Starting subprocess with file monitor
 Starting server in PID 817.
 serving on 0.0.0.0:5000 view at http://127.0.0.1:5000
@@ -43,7 +43,7 @@ serving on 0.0.0.0:5000 view at http://127.0.0.1:5000
         controllers/check.py，另外一个是单元测试文件：tests/functional/test_check.py。</para>
       
       <screen>
-$ paster controller check
+$ <emphasis>paster controller check</emphasis>
 Creating /home/jiangxin/pyenv/pySvnManager/pysvnmanager/controllers/check.py
 Creating /home/jiangxin/pyenv/pySvnManager/pysvnmanager/tests/functional/test_check.py
 </screen>
@@ -115,7 +115,7 @@ class CheckController(BaseController):
       <para>实验一下nosetests是否依然可靠运行。</para>
       
       <screen>
-$ nosetests
+$ <emphasis>nosetests</emphasis>
 .............
 ----------------------------------------------------------------------
 Ran 13 tests in 0.546s
@@ -193,8 +193,7 @@ return render('/check/index.mako')
         <title>视图模板用参数填充</title>
         
         <screen>
-
-  &lt;input type="submit" name="submit" value="提交"&gt;
+&lt;input type="submit" name="submit" value="提交"&gt;
 ${h.end_form()}
   
 &lt;hr&gt;
@@ -397,8 +396,7 @@ class CheckController(BaseController):
         Pylons内置了prototype脚本。如果想要启用Pylons自带prototype 
         的JavaScript框架，只要在模板中嵌入如下WebHelpers语句：</para>
       
-      <screen>
-<![CDATA[
+      <screen><![CDATA[
 <html>
   <head>
     ${h.javascript_include_tag(builtins=True)}
@@ -406,8 +404,7 @@ class CheckController(BaseController):
         
         <para>实际上会在页面中产生下面两个JavaScrip包含语句：</para>
         
-        <screen>
-<![CDATA[
+        <screen><![CDATA[
     <script src="/javascripts/prototype.js" type="text/javascript"></script> 
     <script src="/javascripts/scriptaculous.js" type="text/javascript"></script>
 ]]></screen>
@@ -453,8 +450,7 @@ class CheckController(BaseController):
       <para>文件 check/index.mako 中用WebHelpers.rails的form_remote_tag
         快速创建了一个Ajax Form。</para>
       
-      <screen>
-<![CDATA[
+      <screen><![CDATA[
 ## AJAX Form
 <%
   context.write( 
@@ -471,8 +467,7 @@ class CheckController(BaseController):
 
       <para>出现在页面中，则是如下的代码：</para>
       
-      <screen>
-<![CDATA[
+      <screen><![CDATA[
 <form action="/check/access_map" id="main_form" method="POST" onsubmit="showNoticesPopup(); 
       new Ajax.Updater({success:'acl_msg', failure:'acl_error'}, '/check/access_map', 
         {asynchronous:true, evalScripts:true, method:'post', onComplete:function(request) 
@@ -548,16 +543,14 @@ class CheckController(BaseController):
       
       <para>版本库下拉框(②)更新时，执行JavaScript函数：update_path()，而非提交表单：</para>
       
-      <screen>
-        <![CDATA[
+      <screen><![CDATA[
 <input type="radio" name="reposinput" value="select" Checked onClick="update_path(this.form)">
 ]]></screen>
 
       <para>函数update_path()，执行Ajax.Request，从"get_auth_path"这个action获取信息，
         并用返回值(request.reponseText)为参数调用JavaScript函数ajax_update_path。</para>
       
-      <screen>
-<![CDATA[
+      <screen><![CDATA[
 function update_path(form)
 {
     var repos = "";
@@ -586,8 +579,7 @@ function update_path(form)
         最终这些JavaScript代码在函数ajax_update_path中被执行，
         并用相应的数据更新了授权路径的列表(③)。</para>
       
-      <screen>
-<![CDATA[
+      <screen><![CDATA[
 function ajax_update_path(code)
 {
     var id = new Array();
@@ -650,8 +642,7 @@ detailed-errors=1
     <sect3 id="psm.pylons.controller.unittest.sample1">
       <title>测试示例一</title>
 
-      <screen>
-<![CDATA[
+      <screen><![CDATA[
 res = self.app.get(url_for(controller='check')) 
 assert res.status == 200 
 assert '''<input type="submit" name="submit" value='Check Permissions'>''' in res.body 
@@ -664,8 +655,7 @@ assert res.c.reposlist == ['/', u'repos1', u'repos2', u'repos3', u'document']
     <sect3 id="psm.pylons.controller.unittest.sample2">
       <title>测试示例二</title>
   
-      <screen>
-<![CDATA[
+      <screen><![CDATA[
 params = {
          'userinput':'select', 
          'userselector':'user1',

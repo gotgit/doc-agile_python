@@ -2,9 +2,10 @@
 <sect1 id="psm.preface">
   <title>前言</title>
   
-  <para>本文来自于笔者最近完成的一个小项目 pySvnManager，源代码已经贡献到开源项目网站
-    SorceForge.net。该项目从一开始，就采用了测试驱动开发（TDD）技术，通过一系列的迭代
-    最终敏捷的实现了预期的需求。</para>
+  <para>本文来自于笔者<ulink url="http://www.ossxp.com/News/2008-09-02"
+    >最近完成的一个小项目 pySvnManager</ulink>，源代码已经贡献到开源项目网站
+    <ulink url="http://pySvnManager.sf.net"/>。该项目从一开始，
+    就采用了测试驱动开发（TDD）技术，通过一系列的迭代最终敏捷的实现了预期的需求。</para>
   
   <para>在该项目中采用了Python最新流行的MVC框架:
     Pylons。并在Web页面中大量使用了AJAX技术。本文涉及到的技术术语有：敏捷，TDD，MVC，
@@ -17,8 +18,7 @@
     <para>Subversion使用配置文件进行基于路径的授权，手工配置易于出错。下面是一个
       错误百出的配置示例：</para>
     
-    <blockquote>
-      <screen>
+    <screen>
 [groups]
 admin = &amp;admin, admin1, admin2
 group1 = @group2, user1
@@ -43,8 +43,7 @@ user1 =
 * =
 @group1 = rw
 @visiters = r
-      </screen>
-    </blockquote>
+</screen>
     
     <para>其中的错误或可能的错误有：</para>
     
@@ -83,8 +82,8 @@ user1 =
   <sect2 id="psm.preface.implement">
     <title>最终的实现</title>
     
-    <para>我们先来看看最终的实现。下面的命令是在Debian Linux下完成，
-      Windows或其他平台，与之类似。</para>
+    <para>我们先来如何部署最终的实现。下面的安装配置过程中的命令是在
+      Debian Linux下完成。至于 Windows 或其他平台，应该与之类似。</para>
     
     <!-- =============================================================== -->
     <sect3 id="psm.preface.implement.install">
@@ -93,55 +92,57 @@ user1 =
       <para>理论上最简单的安装模式：</para>
       
       <screen>
-$ sudo easy_install pySvnManager
+$ <emphasis>sudo easy_install pySvnManager</emphasis>
 Searching for pySvnManager
 Reading http://pypi.python.org/simple/pySvnManager/
 Reading https://sourceforge.net/projects/pysvnmanager
 </screen>
 
-      <para>理论上的简单的东西，现实当中可能会有些复杂：</para>
+      <para>理论上很简单的东西，也奈何不了复杂的现实：</para>
 
-      <para>安装过程在进行到访问sourceforge.net以获取pySvnManager最新版本列表时被阻塞。
-        虽然我打算把项目移到别处，但发现一些依赖的包如:
-        python-ldap也是要访问sourceforge.net网站，因此我取消了搬家的打算，默默静等解风。
-        同时将代码镜像在网址：http://svn.worldhello.net/svn/pysvnmanager 上，
-        供不能访问SourceForge.net的用户参考。</para>
+      <para>在项目刚刚开发完成，就出现了相当长的一段时间 SourceForge.net 无法访问！
+        导致 <command>easy_install</command> 为了搜索最新版本，在连接到 
+        <ulink url="http://SourceForge.net"/> 时发生了死锁而阻塞。
+        虽然我打算把项目移到别处，但发现一些依赖的包如: python-ldap 
+        也是要访问 SourceForge.net网站。因此我取消了搬家的打算，耐心且无助的等。
+        同时将代码镜像在网址：<ulink url="http://svn.worldhello.net/svn/pysvnmanager"/>
+        上，供不能访问 <ulink url="http://SourceForge.net"/> 的用户参考。</para>
 
-      <para>可以使用curl命令或者用浏览器连接到 http://pypi.python.org/simple/pySvnManager/，
-        以查找可下载的pySvnManager软件包：</para>
+      <para>如果遇到阻塞，则需要花费更多的时间，手工下载软件包。<command>easy_install</command>
+        也可以安装下载到本地的软件包。</para>
       
       <screen>
-$ curl http://pypi.python.org/simple/pySvnManager/
-&lt;html&gt;&lt;head&gt;&lt;title&gt;Links for pySvnManager&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Links for pySvnManager&lt;/h1&gt;&lt;a href='https://sourceforge.net/projects/pysvnmanager' rel="homepage"&gt;0.1.2dev-r9 home_page&lt;/a&gt;&lt;br/&gt;
-&lt;a href='http://pypi.python.org/packages/2.5/p/pySvnManager/pySvnManager-0.1.2dev_r9-py2.5.egg#md5=f0546558f3974308e0d24bd5195f8694'&gt;pySvnManager-0.1.2dev_r9-py2.5.egg&lt;/a&gt;&lt;br/&gt;
-&lt;a href='http://pypi.python.org/packages/source/p/pySvnManager/pySvnManager-0.1.2dev-r9.tar.gz#md5=eb54172084c67514251dbcfda29f4d23'&gt;pySvnManager-0.1.2dev-r9.tar.gz&lt;/a&gt;&lt;br/&gt;
+$ <emphasis>wget http://pypi.python.org/packages/source/p/pySvnManager/pySvnManager... </emphasis>
+$ <emphasis>sudo easy_install pySvnManager-... </emphasis>
 </screen>
-
-      <para>看到链接了么？ http://pypi.python.org/packages/2.5/p/pySvnManager/pySvnManager... </para>
-      <para>如果是Python2.5，可以直接安装egg包，如果不是，需要下载源码包。
-        无论源码包还是egg包，都可以方便的使用easy_install进行安装：</para>
-      <screen>
-$ wget http://pypi.python.org/packages/source/p/pySvnManager/pySvnManager... 
-$ sudo easy_install pySvnManager-... 
-</screen>
+      
+      <note>
+        <para>PySvnManager 的软件包有两种格式。一种是二进制的格式：<filename>pysvnmanager-xxx.egg</filename>，
+          另外一种是源码包 <filename>pysvnmanager-xxx.tar.gz</filename>。</para>
+        <para>二进制包，是针对特定的 Python 版本编译的，如果您当前的 Python 版本和二进制包的版本不符，
+          就必须从源码包开始安装过程。无论源码包还是二进制的 Egg 包，都可以方便的使用
+          <command>easy_install</command> 进行安装。</para>
+      </note>
 
     </sect3>
     
     <!-- =============================================================== -->
     <sect3 id="psm.preface.implement.deploy">
       <title>网站部署</title>
-        <para>执行make-config和setup-app完成部署。部署过程的细节参见后面软件集成的相关内容。</para>
-        
-        <screen>
-$ mkdir deploy
-$ cd deploy
-$ paster make-config pySvnManager config.ini
+      
+      <para>执行 <command>make-config</command> 和 <command>setup-app</command>
+        完成部署。部署过程的细节参见后面软件集成的相关内容。</para>
+
+      <screen>
+$ <emphasis>mkdir deploy</emphasis>
+$ <emphasis>cd deploy</emphasis>
+$ <emphasis>paster make-config pySvnManager config.ini</emphasis>
 Distribution already installed:
 pySvnManager 0.1.2dev-r9 from /home/jiangxin/pyenv/lib/python2.5/site-packages/pySvnManager-0.1.2dev_r9-py2.5.egg
 Creating config.ini
 Now you should edit the config files
 config.ini
-$ paster setup-app config.ini
+$ <emphasis>paster setup-app config.ini</emphasis>
 Running setup_config() from pysvnmanager.websetup
 </screen>
 
@@ -155,20 +156,28 @@ Running setup_config() from pysvnmanager.websetup
       
       <itemizedlist>
         <listitem>
-          <para>config.ini ：应用默认运行于5000端口，可以在此文件中定制</para>
+          <para><emphasis>config.ini ：</emphasis>
+            
+            应用默认运行于5000端口，可以在此文件中定制</para>
         </listitem>
         
         <listitem>
-          <para>config/localconfig.py ：设置应用缺省的认证方式，缺省用config/svn.passwd口令认证</para>
+          <para><emphasis>config/localconfig.py ：</emphasis>
+            
+            设置应用缺省的认证方式，缺省用config/svn.passwd口令认证</para>
         </listitem>
         
         <listitem>
-          <para>config/svn.passwd ： 缺省该口令文件内所有用户的口令均为 "guess"</para>
+          <para><emphasis>config/svn.passwd ：</emphasis>
+            
+            缺省该口令文件内所有用户的口令均为 "guess"</para>
         </listitem>
         
         <listitem>
-          <para>config/svn.access ： svn路径授权文件，本应用要处理的文件。
-            注意该文件开头的注释是版本号和版本库管理员帐号设置，不要随意删除！</para>
+          <para><emphasis>config/svn.access ：</emphasis>
+            
+            svn路径授权文件，本应用要处理的文件。注意该文件开头的注释是版本号和版本库管理员帐号设置，
+            不要随意删除！</para>
         </listitem>
         
       </itemizedlist>
@@ -178,10 +187,10 @@ Running setup_config() from pysvnmanager.websetup
     <sect3 id="psm.preface.implement.start">
       <title>运行应用</title>
 
-      <para>启动应用，自动开启Web服务于5000端口。用Web浏览器访问。推荐使用Firefox。</para>
+      <para>启动应用，自动开启Web服务于5000端口。用Web浏览器访问。推荐使用 Firefox。</para>
 
       <screen>
-$ paster serve config.ini
+$ <emphasis>paster serve config.ini</emphasis>
 Starting server in PID 28937.
 serving on 0.0.0.0:5000 view at http://127.0.0.1:5000 
 </screen>
@@ -192,19 +201,42 @@ serving on 0.0.0.0:5000 view at http://127.0.0.1:5000
     <!-- =============================================================== -->
     <sect3 id="psm.preface.implement.snapshot">
       <title>软件截屏</title>
-      <para>参见演示网站： http://demo.ossxp.com/svnadmin/</para>
-
-
-      <figure id="psm.preface.implement.snapshot.img1">
-        <title>路径授权验证功能</title>
-        <graphic fileref="images/snapshot_check.png"/>
-      </figure>
-
-      <figure id="psm.preface.implement.snapshot.img2">
-        <title>路径授权设置</title>
-        <graphic fileref="images/snapshot_acl.png"/>
-      </figure>
       
+      <para>参见演示网站：<ulink url="http://demo.ossxp.com/svnadmin/security/submit?username=admin&amp;password=admin"
+        >http://demo.ossxp.com/svnadmin/</ulink></para>
+
+      <para>Subversion 的授权机制，可能存在互相冲突的策略，导致用户权限的设置可能并不符合预期。
+        可以通过“权限检查”的功能对用户权限进行检查。参见：
+        <xref linkend="psm.preface.implement.snapshot.check"/></para>
+        
+      <sidebar>
+        <figure id="psm.preface.implement.snapshot.check">
+          <title>用户权限测试功能</title>
+          <graphic fileref="images/snapshot_check.png"/>
+        </figure>
+      </sidebar>
+
+      <para>管理员可以用图形界面对用户帐号进行角色管理，可以对版本库的授权进行设置。参见：
+        <xref linkend="psm.preface.implement.snapshot.acl"/></para>
+      
+      <sidebar>
+        <figure id="psm.preface.implement.snapshot.acl">
+          <title>路径授权设置功能</title>
+          <graphic fileref="images/snapshot_acl.png"/>
+        </figure>
+      </sidebar>
+      
+      <para>PySvnManager 还提供的版本库创建和删除（仅限空版本库），
+        以及版本库钩子脚本的设置界面。参见：
+        <xref linkend="psm.preface.implement.snapshot.hooks"/></para>
+      
+      <sidebar>
+        <figure id="psm.preface.implement.snapshot.hooks">
+          <title>版本库创建及钩子脚本扩展</title>
+          <graphic fileref="images/snapshot_hooks.png"/>
+        </figure>
+      </sidebar>
+
       <para>下面将整个开发过程予以概要介绍，以了解Python的Web编程框架以及Python的敏捷实践。</para>
       
     </sect3>

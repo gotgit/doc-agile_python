@@ -20,41 +20,42 @@
   <sect2 id="psm.tdd.iter1">
     <title>迭代1：测试框架的建立</title>
     
+    <para>首先搭建单元测试框架，并完成一个最小的功能集合。</para>
     
     <!-- =============================================================== -->
     <sect3 id="psm.tdd.iter1.goal">
       <title>假想任务目标</title>
       
-      <para>首先为我们的模型起个名字：svnauthz。</para>
+      <para>首先为我们的模型起个名字：<filename>svnauthz</filename>。</para>
       
       <para>Subversion路径授权中，用户对象（用户/别名/组）显然是最重要的基本单位，
         每一条授权策略都包含一个用户对象。那么我们第一个迭代就实现用户对象：
         User类，Alias类，Group类。</para>
       
       <para>假设svnauthz的 User, Alias, Group 类已经完成，我们期望他们实现的功能是什么呢？
-        于是在纸上写下（模拟python交互式命令行）：</para>
+        于是在纸上写下假想任务目标（模拟python交互式命令行）：</para>
       
       <screen>
 &gt;&gt;&gt; <emphasis>from svnauthz import User, Group, Alias</emphasis>
-&gt;&gt;&gt; user1=User('Tom')
-&gt;&gt;&gt; user2=User("Jerry")
-&gt;&gt;&gt; print user1
+&gt;&gt;&gt; <emphasis>user1=User('Tom')</emphasis>
+&gt;&gt;&gt; <emphasis>user2=User("Jerry")</emphasis>
+&gt;&gt;&gt; <emphasis>print user1</emphasis>
 Tom # 显示 user1 内容（字符串化）
 
-&gt;&gt;&gt; alias1=Alias('admin')
-&gt;&gt;&gt; alias1.user = user1
-&gt;&gt;&gt; print alias1
+&gt;&gt;&gt; <emphasis>alias1=Alias('admin')</emphasis>
+&gt;&gt;&gt; <emphasis>alias1.user = user1</emphasis>
+&gt;&gt;&gt; <emphasis>print alias1</emphasis>
 admin = Tom # 显示 alias1 内容（字符串化）
 
-&gt;&gt;&gt; group1 = Group('team1')
-&gt;&gt;&gt; group2 = Group('team2')
-&gt;&gt;&gt; group1.append(group2, user2, alias1, user1)
-&gt;&gt;&gt; print group1
+&gt;&gt;&gt; <emphasis>group1 = Group('team1')</emphasis>
+&gt;&gt;&gt; <emphasis>group2 = Group('team2')</emphasis>
+&gt;&gt;&gt; <emphasis>group1.append(group2, user2, alias1, user1)</emphasis>
+&gt;&gt;&gt; <emphasis>print group1</emphasis>
 team1 = &amp;admin, @team2, Jerry, Tom # group1 的成员列表要进行排序
-&gt;&gt;&gt; group2.append(group1, user1)
+&gt;&gt;&gt; <emphasis>group2.append(group1, user1)</emphasis>
 Exception: ... # 抛出异常! group1 引起了组间的循环引用
-&gt;&gt;&gt; group2.append(group1, user1, autodrop=True)
-&gt;&gt;&gt; print group2
+&gt;&gt;&gt; <emphasis>group2.append(group1, user1, autodrop=True)</emphasis>
+&gt;&gt;&gt; <emphasis>print group2</emphasis>
 team2 = Tom # 使用 autodrop 参数，自动抛弃冲突的组成员，而不引发异常。（即容错性）
 </screen>
 
@@ -64,7 +65,7 @@ team2 = Tom # 使用 autodrop 参数，自动抛弃冲突的组成员，而不�
     <sect3 id="psm.tdd.iter1.unittest.failed">
       <title>建立测试用例</title>
       
-      <para>将假想的任务目标翻译为测试用例。建立单元测试文件 test_svnauthz.py 如下：</para>
+      <para>将假想的任务目标翻译为测试用例。建立单元测试文件 <filename>test_svnauthz.py</filename> 如下：</para>
       
       <screen>
 #!/usr/bin/env python
@@ -104,7 +105,7 @@ if __name__ == '__main__': unittest.main()
       <para>执行测试用例：</para>
       
       <screen>
-$ python test_svnauthz.py
+$ <emphasis>python test_svnauthz.py</emphasis>
 Traceback (most recent call last):
   File "test_svnauthz.py", line 8, in &lt;module&gt;
     from svnauthz import *
@@ -119,16 +120,16 @@ ImportError: No module named svnauthz
       <title>编写模组，使测试用例通过</title>
 
       <para>之前执行测试用例失败，报告：找不到 svnauthz 模组。因为模组还没有创建，当然找不到了。
-        于是创建一个空的模组文件 svnauthz.py。</para>
+        于是创建一个空的模组文件 <filename>svnauthz.py</filename>。</para>
       
       <screen>
-$ touch svnauthz.py
+$ <emphasis>touch svnauthz.py</emphasis>
 </screen>
 
       <para>执行测试用例：</para>
       
       <screen>
-$ python test_svnauthz.py
+$ <emphasis>python test_svnauthz.py</emphasis>
 EEE
 ======================================================================
 ERROR: testAlias (__main__.TestStage1)
@@ -201,16 +202,16 @@ NameError: global name 'Alias' is not defined
           <para>将 def testGroup(self) 改为 def _testGroup(self)</para>
         </listitem>
         
-        <listitem>
-          <para>注：只要不是以 test 开头都好。</para>
-        </listitem>
-        
       </itemizedlist>
-
+      
+      <note>
+        <para>注：只要不是以 test 开头都好。</para>
+      </note>
+      
       <para>再次执行测试用例，太棒了完全通过！</para>
       
       <screen>
-$ python test_svnauthz.py -v
+$ <emphasis>python test_svnauthz.py -v</emphasis>
 testUser (__main__.TestStage1) ... ok
 
 ----------------------------------------------------------------------
@@ -229,7 +230,7 @@ OK
         就可以使用coverage命令了。</para>
       
       <screen>
-$ coverage -x test_svnauthz.py
+$ <emphasis>coverage -x test_svnauthz.py</emphasis>
 .
 ----------------------------------------------------------------------
 Ran 1 test in 0.001s
@@ -259,13 +260,13 @@ def testUser(self):
       <para>再次检查一下测试用例对代码的覆盖度。哇，100% 通过！</para>
 
       <screen>
-$ coverage -x test_svnauthz.py
+$ <emphasis>coverage -x test_svnauthz.py</emphasis>
 .
 ----------------------------------------------------------------------
 Ran 1 test in 0.002s
 
 OK
-$ coverage -r -m svnauthz.py
+$ <emphasis>coverage -r -m svnauthz.py</emphasis>
 Name       Stmts   Exec  Cover   Missing
 ----------------------------------------
 svnauthz       8      8   100%
@@ -283,7 +284,7 @@ svnauthz       8      8   100%
       <para>执行测试用例：</para>
       
       <screen>
-$ python tests/test_svnauthz.py
+$ <emphasis>python tests/test_svnauthz.py</emphasis>
 Traceback (most recent call last):
   File "tests/test_svnauthz.py", line 8, in &lt;module&gt;
     from svnauthz import *
@@ -307,9 +308,8 @@ sys.path.insert(0,'src')
         可以用easy_install 来安装:</para>
       
       <screen>
-$ easy_install nose
-执行nosetests：
-$ nosetests
+$ <emphasis>easy_install nose</emphasis>
+$ <emphasis>nosetests</emphasis>
 .
 ----------------------------------------------------------------------
 Ran 1 test in 0.008s
@@ -320,7 +320,7 @@ OK
       <para>代码覆盖度测试</para>
       
       <screen>
-$ nosetests --with-coverage --cover-package=svnauthz
+$ <emphasis>nosetests --with-coverage --cover-package=svnauthz</emphasis>
 .
 Name       Stmts   Exec  Cover   Missing
 ----------------------------------------
@@ -351,45 +351,45 @@ OK
       <para>在Python交互模式下测试svnauthz模组：</para>
       
       <screen>
-&gt;&gt;&gt; buff = '''# admin: / = administrator
-... [groups]
-... group1=user1,user2
-... [/]
-... $authenticated=r
-... [/trunk]
-... @group1 = r
-... user3 = rw'''
-&gt;&gt;&gt; import StringIO
-&gt;&gt;&gt; file = StringIO.StringIO(buff)
-&gt;&gt;&gt; authz=SvnAuthz()
-&gt;&gt;&gt; authz.load(file)
-&gt;&gt;&gt; [x.name for x in authz.reposlist]
+&gt;&gt;&gt; <emphasis>buff = '''# admin: / = administrator</emphasis>
+... <emphasis>[groups]</emphasis>
+... <emphasis>group1=user1,user2</emphasis>
+... <emphasis>[/]</emphasis>
+... <emphasis>$authenticated=r</emphasis>
+... <emphasis>[/trunk]</emphasis>
+... <emphasis>@group1 = r</emphasis>
+... <emphasis>user3 = rw'''</emphasis>
+&gt;&gt;&gt; <emphasis>import StringIO</emphasis>
+&gt;&gt;&gt; <emphasis>file = StringIO.StringIO(buff)</emphasis>
+&gt;&gt;&gt; <emphasis>authz=SvnAuthz()</emphasis>
+&gt;&gt;&gt; <emphasis>authz.load(file)</emphasis>
+&gt;&gt;&gt; <emphasis>[x.name for x in authz.reposlist]</emphasis>
 ['/']
-&gt;&gt;&gt; [x.uname for x in authz.userlist]
+&gt;&gt;&gt; <emphasis>[x.uname for x in authz.userlist]</emphasis>
 [u'administrator', u'user1', u'user2', u'user3']
-&gt;&gt;&gt; [x.uname for x in authz.userlist]
+&gt;&gt;&gt; <emphasis>[x.uname for x in authz.userlist]</emphasis>
 [u'administrator', u'user1', u'user2', u'user3']
-&gt;&gt;&gt; [x.uname for x in authz.grouplist]
+&gt;&gt;&gt; <emphasis>[x.uname for x in authz.grouplist]</emphasis>
 [u'@group1', u'$authenticated']
-&gt;&gt;&gt; [x.uname for x in authz.aliaslist]
+&gt;&gt;&gt; <emphasis>[x.uname for x in authz.aliaslist]</emphasis>
 []
-&gt;&gt;&gt; print authz.grouplist
+&gt;&gt;&gt; <emphasis>print authz.grouplist</emphasis>
 [groups]
 group1 = user1, user2
 
-&gt;&gt;&gt; print authz.aliaslist
+&gt;&gt;&gt; <emphasis>print authz.aliaslist</emphasis>
 [aliases]
-&gt;&gt;&gt; authz.is_admin('administrator','/')
+&gt;&gt;&gt; <emphasis>authz.is_admin('administrator','/')</emphasis>
 True
-&gt;&gt;&gt; authz.is_admin('administrator','repos1')
+&gt;&gt;&gt; <emphasis>authz.is_admin('administrator','repos1')</emphasis>
 True
-&gt;&gt;&gt; authz.add_rules('/', '/trunk', '&amp;admin=rw; $authenticated=')
-&gt;&gt;&gt; module1 = authz.get_module('/', '/trunk')
-&gt;&gt;&gt; [str(x) for x in module1]
+&gt;&gt;&gt; <emphasis>authz.add_rules('/', '/trunk', '&amp;admin=rw; $authenticated=')</emphasis>
+&gt;&gt;&gt; <emphasis>module1 = authz.get_module('/', '/trunk')</emphasis>
+&gt;&gt;&gt; <emphasis>[str(x) for x in module1]</emphasis>
 ['@group1 = r', 'user3 = rw', '$authenticated = ', '&amp;admin = rw']
 </screen>
 
-    <para>现在是时候给svnauthz套上一个华丽一点的外衣了。</para>
+    <para>现在是时候给 svnauthz 套上一个华丽一点的外衣了。</para>
     
   </sect2>
 

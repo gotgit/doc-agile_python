@@ -15,9 +15,9 @@
       部署第一步是在部署目录中创建一个INI文件：</para>
     
     <screen>
-~/deploy$ paster make-config pySvnManager config.ini
+~/deploy$ <emphasis>paster make-config pySvnManager config.ini</emphasis>
 ...
-~/deploy$ ls
+~/deploy$ <emphasis>ls</emphasis>
 config.ini
 </screen>
     
@@ -34,11 +34,11 @@ config.ini
     <para>当在部署目录中创建INI文件后，还要执行setup-app命令，以完成应用的部署。</para>
     
     <screen>
-~/deploy$ paster setup-app config.ini
+~/deploy$ <emphasis>paster setup-app config.ini</emphasis>
 Running setup_config() from pysvnmanager.websetup
-~/deploy$ ls -F
+~/deploy$ <emphasis>ls -F</emphasis>
 config/  config.ini
-~/deploy$ find config -type f
+~/deploy$ <emphasis>find config -type f</emphasis>
 config/localconfig.py
 config/svn.access
 config/svn.passwd
@@ -98,16 +98,16 @@ setup(
     <para>创建源码包</para>
     
     <screen>
-$ python setup.py sdist
-$ ls dist/
+$ <emphasis>python setup.py sdist</emphasis>
+$ <emphasis>ls dist/</emphasis>
 pySvnManager-0.1.2dev-r14.tar.gz
 </screen>
 
     <para>创建二进制包</para>
     
     <screen>
-$ python setup.py bdist_egg
-$ ls dist/
+$ <emphasis>python setup.py bdist_egg</emphasis>
+$ <emphasis>ls dist/</emphasis>
 pySvnManager-0.1.2dev_r14-py2.5.egg
 </screen>
 

@@ -96,8 +96,7 @@ class TestController(TestCase):
 
     <para>在测试用例中调用login方法：</para>
     
-    <screen>
-<![CDATA[
+    <screen><![CDATA[
 self.login('root')
 res = self.app.get(url_for(controller='check')) 
 assert res.status == 200 
