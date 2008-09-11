@@ -3,20 +3,20 @@
   <title>前言</title>
   
   <para>本文来自于笔者<ulink url="http://www.ossxp.com/News/2008-09-02"
-    >最近完成的一个小项目 pySvnManager</ulink>，源代码已经贡献到开源项目网站
-    <ulink url="http://pySvnManager.sf.net"/>。该项目从一开始，
+    >最近完成的一个小项目 pySvnManager</ulink>，源代码已经贡献到开源社区。
+    项目首页：<ulink url="http://pySvnManager.sf.net"/>。该项目从一开始，
     就采用了测试驱动开发（TDD）技术，通过一系列的迭代最终敏捷的实现了预期的需求。</para>
   
-  <para>在该项目中采用了Python最新流行的MVC框架:
-    Pylons。并在Web页面中大量使用了AJAX技术。本文涉及到的技术术语有：敏捷，TDD，MVC，
-    单元测试，代码覆盖测试，AJAX，重构，i18n，开放源代码。</para>
+  <para>在该项目中采用了Python最新流行的MVC框架：Pylons。并在 Web 页面中大量使用了
+    AJAX 技术。本文涉及到的技术术语有：敏捷, TDD, MVC,
+    单元测试, 代码覆盖测试, AJAX, 重构, i18n, 开放源代码。</para>
   
   <!-- ================================================================= -->
   <sect2 id="psm.preface.background">
     <title>项目背景</title>
     
-    <para>Subversion使用配置文件进行基于路径的授权，手工配置易于出错。下面是一个
-      错误百出的配置示例：</para>
+    <para>Subversion使用配置文件进行基于路径的授权，手工配置易于出错。
+      下面是一个错误百出的配置示例：</para>
     
     <screen>
 [groups]
@@ -49,23 +49,30 @@ user1 =
     
     <orderedlist>
       <listitem>
-        <para>组的循环引用：group1包含了group2，而group2又反过来包含group1，
-          造成循环引用。</para>
+        <para><emphasis>组的循环引用：</emphasis>
+          
+          group1包含了group2，而group2又反过来包含group1，造成循环引用。</para>
       </listitem>
       
       <listitem>
-        <para>包含未定义的组或者别名：例如在 repos1 版本库的 /trunk/src 
-          的策略中用到了 @visiters 组，而该组没有在[groups]小节中定义；</para>
+        <para><emphasis>包含未定义的组或者别名：</emphasis>
+          
+          例如在 repos1 版本库的 /trunk/src 的策略中用到了 @visiters 组，
+          而该组没有在[groups]小节中定义；</para>
       </listitem>
       
       <listitem>
-        <para>版本库repos1的根路径，欲限制user1的访问，而实际效果并非如此，
+        <para><emphasis>潜在的配置错误：</emphasis>
+          
+          版本库repos1的根路径，欲限制user1的访问，而实际效果并非如此，
           因为uer1属于group1组，而group1组被授权。user1实际获得的权限是策略能够给予
           的最大权限；</para>
       </listitem>
       
       <listitem>
-        <para>访问版本库repos1的 /trunk 目录，会参照缺省的[/trunk]小节设置，
+        <para><emphasis>潜在的配置错误：</emphasis>
+          
+          访问版本库repos1的 /trunk 目录，会参照缺省的[/trunk]小节设置，
           这可能跟管理员本意不符。需要对repos1的/trunk重新定义权限以覆盖缺省的
           [/trunk]小节的设置。</para>
       </listitem>
@@ -82,8 +89,8 @@ user1 =
   <sect2 id="psm.preface.implement">
     <title>最终的实现</title>
     
-    <para>我们先来如何部署最终的实现。下面的安装配置过程中的命令是在
-      Debian Linux下完成。至于 Windows 或其他平台，应该与之类似。</para>
+    <para>我们先来看看如何部署最终的实现。下面的安装配置过程中的命令是在
+      Debian Linux 下完成。至于 Windows 或其他平台，应该与之类似。</para>
     
     <!-- =============================================================== -->
     <sect3 id="psm.preface.implement.install">
@@ -98,13 +105,13 @@ Reading http://pypi.python.org/simple/pySvnManager/
 Reading https://sourceforge.net/projects/pysvnmanager
 </screen>
 
-      <para>理论上很简单的东西，也奈何不了复杂的现实：</para>
+      <para>理论上很简单的东西，却奈何不了复杂的现实：</para>
 
-      <para>在项目刚刚开发完成，就出现了相当长的一段时间 SourceForge.net 无法访问！
+      <para>在项目刚刚开发完成，就出现了相当长一段时间的 SourceForge.net 无法访问！
         导致 <command>easy_install</command> 为了搜索最新版本，在连接到 
         <ulink url="http://SourceForge.net"/> 时发生了死锁而阻塞。
         虽然我打算把项目移到别处，但发现一些依赖的包如: python-ldap 
-        也是要访问 SourceForge.net网站。因此我取消了搬家的打算，耐心且无助的等。
+        也是要访问 SourceForge.net网站。因此我取消了搬家的打算，耐心且无助的等待解封。
         同时将代码镜像在网址：<ulink url="http://svn.worldhello.net/svn/pysvnmanager"/>
         上，供不能访问 <ulink url="http://SourceForge.net"/> 的用户参考。</para>
 
@@ -237,7 +244,7 @@ serving on 0.0.0.0:5000 view at http://127.0.0.1:5000
         </figure>
       </sidebar>
 
-      <para>下面将整个开发过程予以概要介绍，以了解Python的Web编程框架以及Python的敏捷实践。</para>
+      <para>下面将整个开发过程进行概要的介绍，展示如何用 Python 进行敏捷的 Web 开发。</para>
       
     </sect3>
   

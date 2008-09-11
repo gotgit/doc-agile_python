@@ -1,16 +1,20 @@
 <!-- =================================================================== -->
 <sect1 id="psm.security">
-  <title>pySvnAuthz本身的认证和授权</title>
+  <title>pySvnManager 本身的认证和授权</title>
 
+  <para>pySvnManager 作为 Subversion 授权管理的软件，如果本身没有认证和授权机制，
+    就会成为系统最大的漏洞。为此我们迫切需要为我们的应用增加认证和授权。还好，
+    这实现起来并不是很困难。</para>
+  
   <!-- ================================================================= -->
   <sect2 id="psm.security.initial">
-    <title>为BaseController增加__before__()方法</title>
+    <title>为 BaseController 增加 __before__ 方法</title>
   
-    <para>__before__是WSGIController 特有的方法，在 Action 执行之前执行，
+    <para>__before__ 是 WSGIController 特有的方法，在 Action 执行之前执行，
       可以用于初始化变量，以及做权限控制。</para>
     
-    <para>BaseController是所有控制器的基类，在该基类增加授权功能，
-      会自动为其他控制器所使用。BaseController的代码在文件lib/base.py中。</para>
+    <para>BaseController 是所有控制器的基类，在该基类增加授权功能，
+      会自动为其他控制器所使用。BaseController 的代码在文件 <filename>lib/base.py</filename> 中。</para>
     
     <screen>
 class BaseController(WSGIController):
@@ -29,9 +33,9 @@ class BaseController(WSGIController):
                 return redirect_to(h.url_for(controller='security'))
 </screen>
 
-    <para>从BaseController继承的类，可以设置requires_auth来增加授权。
-      requires_auth可以为True或者是一个包含要进行授权的动作列表。如果需要授权，
-      会检查session中是否包含登录信息否则跳转到登录页面（security控制器）。</para>
+    <para>从BaseController 继承的类，可以设置 requires_auth 来增加授权。
+      requires_auth 可以为 True 或者是一个包含要进行授权的动作列表。如果需要授权，
+      会检查 session 中是否包含登录信息否则跳转到登录页面（security控制器）。</para>
     
   </sect2>
   
@@ -50,10 +54,10 @@ class CheckController(BaseController):
   
   <!-- ================================================================= -->
   <sect2 id="psm.security.controller">
-    <title>Security控制器</title>
+    <title>Security 控制器实现</title>
  
     <para>Security控制器用于实现用户的登录和退出。要为Security控制器增加
-      login和logout方法，并且增加登录视图模板。流程见：<xref linkend="psm.security.controller.fig1"/></para>
+      login 和 logout方法，并且增加登录视图模板。流程见：<xref linkend="psm.security.controller.fig1"/></para>
     
     <sidebar>
       <figure id="psm.security.controller.fig1">
@@ -68,10 +72,12 @@ class CheckController(BaseController):
   
   <!-- ================================================================= -->
   <sect2 id="psm.security.authz">
-    <title>pySvnAuthz授权</title>
+    <title>pySvnManager 授权</title>
 
-    <para>因为我们已经扩展了svn authz 文件，为版本库增加了管理员设置，所以当用户登录后，
-      只要和管理员帐号做比较就可以实现授权。具体参见代码。</para>
+    <para>在 SvnAuthz 类的实现中，在 svnauthz 文件中为版本库增加了管理员设置，
+      来进行管理员的身份验证。我们就利用同样的代码对 pySvnManager 进行授权验证。</para>
+    
+    <para>具体实现参见代码。</para>
     
   </sect2>
   

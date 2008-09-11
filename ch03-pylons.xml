@@ -95,7 +95,7 @@ class CheckController(BaseController):
       <para>把我们已经开发完毕的svnauthz模组及其单元测试放到pySvnManager的代码树中，
         因为svnauthz和pySvnManager的耦合很紧，没有必要单独维护svnauthz模组。</para>
       
-      <para>pysvnauthz/model 目录是放置模组的地方，将svnauthz的模组放在该目录下。</para>
+      <para>pySvnManager/model 目录是放置模组的地方，将svnauthz的模组放在该目录下。</para>
       
       <para>至于单元测试用例，则应该拷贝到pysvnmanager/tests 目录下。该目录下有文件 
         test_models.py，就是用于测试模组的。我们先参考 test_models.py 
@@ -625,10 +625,9 @@ function ajax_update_path(code)
   <sect2 id="psm.pylons.controller.unittest">
     <title>控制器的单元测试</title>
 
-    <para>每一个控制器，在tests/functional</para>
-    
-    <para>目录下都一个对应的单元测试文件。Pylons的单元测试是使用paste.fixture
-      来模拟浏览器对Web服务器的访问，通过对返回结果的检查实现测试。</para>
+    <para>每一个控制器，在tests/functional 目录下都一个对应的单元测试文件。
+      Pylons的单元测试是使用 paste.fixture 来模拟浏览器对Web服务器的访问，
+      通过对返回结果的检查实现测试。</para>
     
     <para>测试用例的运行，还是使用nosetests，nosetests能够主动到tests目录下发现测试用例，
       并运行。</para>
@@ -695,7 +694,7 @@ assert '''<div id='acl_path_msg'>[repos1:/trunk/src/test] user1 =</div>''' in re
       模板(视图)设计，控制器设计，单元测试的流程。</para>
     
     <para>当完成所有的三个控制器之后，会发现似乎少了些什么？
-      难道要任何人都可以查看SVN版本库的授权甚至修改版本库授权么？
-      我们需要为pySvnManager增加认证和授权管理。</para>
+      难道要任何人都可以查看 SVN 版本库的授权甚至修改版本库授权么？
+      我们需要为 pySvnManager 增加认证和授权管理。</para>
   </sect2>
 </sect1>

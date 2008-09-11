@@ -43,10 +43,10 @@ test_users = {'root':'guess', 'jiangxin':'guess', 'nobody':'guess'}
  
     <para>Pylons的ini配置文件固然可以囊括程序中的所有可配置信息，
       但是还是觉得将配置文件写入一个Python文件直接import来得简单。
-      这就是为什么我们程序中还出现了localconfig.py配置文件。</para>
+      这就是为什么我们程序中还出现了 <filename>localconfig.py</filename> 配置文件。</para>
     
-    <para>localconfig.py是一个从DefaultConfig派生的子类，
-      用户的修改保存在localconfig.py中。</para>
+    <para> <filename>localconfig.py</filename> 包含从 DefaultConfig 派生的类，
+      用户的修改保存在 <filename>localconfig.py</filename> 中。</para>
     
     <screen>
 # -*- coding: utf-8 -*-
@@ -58,7 +58,7 @@ class LocalConfig(DefaultConfig):
     auth = [htpasswd_login]
 </screen>
 
-    <para>这里我们定义了pySvnManager的需要用到的认证插件。</para>
+    <para>这里我们定义了 pySvnManager 的需要用到的认证插件。</para>
     
   </sect2>
   

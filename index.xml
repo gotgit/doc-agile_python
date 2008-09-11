@@ -19,8 +19,9 @@
 
 <article id="index">
   <articleinfo>
-    <title>Python/Pylons 敏捷实践</title>
-    <author><firstname>http://www.ossxp.com</firstname></author>
+    <title>敏捷 Web 开发实践</title>
+    <subtitle>—— pySvnManager 项目实战</subtitle>
+    <author><firstname><ulink url="http://www.ossxp.com"/></firstname></author>
     
     <affiliation>
       <orgname>&orgname;</orgname>
