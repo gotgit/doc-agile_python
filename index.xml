@@ -21,11 +21,11 @@
   <articleinfo>
     <title>敏捷 Web 开发实践</title>
     <subtitle>—— pySvnManager 项目实战</subtitle>
-    <author><firstname><ulink url="http://www.ossxp.com"/></firstname></author>
+    <author><firstname><ulink url="http://www.ossxp.com"/>www.ossxp.com</firstname></author>
     
     <affiliation>
       <orgname>&orgname;</orgname>
-      <address><email>worldhello.net＠gmail.com</email></address>
+      <address><link><uri>http://www.ossxp.com</uri></link></address>
     </affiliation>
 
     <revhistory>
