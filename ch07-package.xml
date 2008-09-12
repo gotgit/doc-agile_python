@@ -55,7 +55,7 @@ config/svn.passwd
       我们对websetup.py的setup_config方法进行设置，
       用以初始化应用（拷贝三个配置文件到config目录）。示例如下：</para>
     
-    <screen>
+    <programlisting><![CDATA[
 def setup_config(command, filename, section, vars):
     """Place any commands to setup pysvnmanager here"""
     conf = appconfig('config:' + filename)
@@ -72,7 +72,7 @@ def setup_config(command, filename, section, vars):
             log.warning("Warning: %s already exist, ignored." % f)
         else:
             copyfile(src, dest)
-</screen>
+]]></programlisting>
 
     </sect2>
     
@@ -82,7 +82,7 @@ def setup_config(command, filename, section, vars):
 
       <para>版本号等信息保存于文件setup.py。</para>
       
-      <screen>
+      <programlisting><![CDATA[
 setup(
     name='pySvnManager',
     version="0.1.2",
@@ -90,7 +90,7 @@ setup(
     author='Jiang Xin',
     author_email='jiangxin@ossxp.com',
     url='https://sourceforge.net/projects/pysvnmanager',
-</screen>
+]]></programlisting>
 
     <para>如果代码是保存在SVN中，编译时，还会将SVN的全局版本号作为软件的
       Build号添加在版本号的后面。</para>

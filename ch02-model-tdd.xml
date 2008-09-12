@@ -41,7 +41,7 @@
       <para>假设svnauthz的 User, Alias, Group 类已经完成，我们期望他们实现的功能是什么呢？
         于是在纸上写下假想任务目标（模拟python交互式命令行）：</para>
       
-      <screen>
+      <programlisting>
 &gt;&gt;&gt; <emphasis>from svnauthz import User, Group, Alias</emphasis>
 &gt;&gt;&gt; <emphasis>user1=User('Tom')</emphasis>
 &gt;&gt;&gt; <emphasis>user2=User("Jerry")</emphasis>
@@ -63,7 +63,7 @@ Exception: ... # 抛出异常! group1 引起了组间的循环引用
 &gt;&gt;&gt; <emphasis>group2.append(group1, user1, autodrop=True)</emphasis>
 &gt;&gt;&gt; <emphasis>print group2</emphasis>
 team2 = Tom # 使用 autodrop 参数，自动抛弃冲突的组成员，而不引发异常。（即容错性）
-</screen>
+</programlisting>
 
     </sect3>
 
@@ -73,7 +73,7 @@ team2 = Tom # 使用 autodrop 参数，自动抛弃冲突的组成员，而不�
       
       <para>将假想的任务目标翻译为测试用例。建立单元测试文件 <filename>test_svnauthz.py</filename> 如下：</para>
       
-      <screen>
+      <programlisting><![CDATA[
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -100,13 +100,13 @@ class TestStage1(unittest.TestCase):
         group1 = Group('team1')
         group2 = Group('team2')
         group1.append(group2, user2, alias1, user1)
-        self.assert_(str(group1) == 'team1 = &amp;admin, @team2, Jerry, Tom')
+        self.assert_(str(group1) == 'team1 = &admin, @team2, Jerry, Tom')
         self.assertRaises(Exception, group2.append, group1, user1)
         group2.append(group1, user1, autodrop=True)
         self.assert_(str(group2) == 'team2 = Tom')
 
 if __name__ == '__main__': unittest.main()
-</screen>
+]]></programlisting>
 
       <para>执行测试用例：</para>
       
@@ -152,7 +152,7 @@ NameError: global name 'User' is not defined
       
       <para>svnauthz.py第一个版本的代码如下：</para>
       
-      <screen>
+      <programlisting><![CDATA[
 1 #!/usr/bin/env python
 2 # -*- coding: utf-8 -*-
 3 
@@ -173,12 +173,12 @@ NameError: global name 'User' is not defined
 18 
 19     def __str__(self):
 20         return self.__name
-</screen>
+]]></programlisting>
 
       <para>再次执行测试用例：</para>
       
       <screen>
-$ python test_svnauthz.py -v
+$ <emphasis>python test_svnauthz.py -v</emphasis>
 testAlias (__main__.TestStage1) ... ERROR
 testGroup (__main__.TestStage1) ... ERROR
 testUser (__main__.TestStage1) ... ok
@@ -256,12 +256,12 @@ svnauthz       8      7    87%   15
       
       <para>我们在testUser用例的最后补充一条断言：</para>
       
-      <screen>
+      <programlisting>
 def testUser(self):
     user1 = User('Tom')
     self.assert_(str(user1) == 'Tom')
     self.assertRaises(Exception, User, " ")
-</screen>
+  </programlisting>
 
       <para>再次检查一下测试用例对代码的覆盖度。哇，100% 通过！</para>
 
@@ -299,10 +299,10 @@ ImportError: No module named svnauthz
 
       <para>在 test_svnauthz.py 文件头增加如下语句，设置Python模组查询路径：</para>
       
-      <screen>
+      <programlisting>
 import sys
 sys.path.insert(0,'src')
-</screen>
+</programlisting>
 
       <para>测试用例又可以成功执行了。</para>
       

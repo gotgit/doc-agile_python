@@ -14,8 +14,8 @@
     就采用了测试驱动开发（TDD）技术，通过一系列的迭代最终敏捷的实现了预期的需求。</para>
   
   <para>在该项目中采用了Python最新流行的MVC框架：Pylons。并在 Web 页面中大量使用了
-    AJAX 技术。本文涉及到的技术术语有：敏捷, TDD, MVC,
-    单元测试, 代码覆盖测试, AJAX, 重构, i18n, 开放源代码。</para>
+    AJAX 技术。本文涉及到的技术术语有：敏捷, TDD, MVC, 单元测试, 代码覆盖测试, 
+    AJAX, 重构, i18n, 开放源代码。</para>
   
   <!-- ================================================================= -->
   <sect2 id="psm.preface.background">
@@ -24,7 +24,7 @@
     <para>Subversion使用配置文件进行基于路径的授权，手工配置易于出错。
       下面是一个错误百出的配置示例：</para>
     
-    <screen>
+    <programlisting>
 [groups]
 admin = &amp;admin, admin1, admin2
 group1 = @group2, user1
@@ -49,7 +49,7 @@ user1 =
 * =
 @group1 = rw
 @visiters = r
-</screen>
+</programlisting>
     
     <para>其中的错误或可能的错误有：</para>
     

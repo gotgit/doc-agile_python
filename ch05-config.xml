@@ -18,23 +18,23 @@
     <para>在前面我们提到TestController中加入login方法，实现测试用例中的模拟登录。
       其中代码中出现了 "config.get()"，这是什么呢？</para>
     
-    <screen>
+    <programlisting><![CDATA[
 if not password:
     d = eval(config.get('test_users', {}))
     password = d.get(username,'')
-</screen>
+]]></programlisting>
     
     <para>其实，config是Pylons读取ini文件创建的数据结构。在test.ini
       （用于单元测试的Pylons配置）中，包含test_users的配置，
       为单元测试的用户登录帐号提供默认口令：</para>
     
-    <screen>
+    <programlisting><![CDATA[
 [app:main]
 ...
 # Login test: user account and password
 test_users = {'root':'guess', 'jiangxin':'guess', 'nobody':'guess'}
 ...
-</screen>
+]]></programlisting>
 
     <note>
       <para>注：test.ini的[app:main]小节和[server:main]小节中的设置，
@@ -54,7 +54,7 @@ test_users = {'root':'guess', 'jiangxin':'guess', 'nobody':'guess'}
     <para> <filename>localconfig.py</filename> 包含从 DefaultConfig 派生的类，
       用户的修改保存在 <filename>localconfig.py</filename> 中。</para>
     
-    <screen>
+    <programlisting><![CDATA[
 # -*- coding: utf-8 -*-
 
 from pysvnmanager.config.DefaultConfig import DefaultConfig
@@ -62,7 +62,7 @@ from pysvnmanager.config.DefaultConfig import DefaultConfig
 class LocalConfig(DefaultConfig):
     from pysvnmanager.model.auth.http import htpasswd_login
     auth = [htpasswd_login]
-</screen>
+]]></programlisting>
 
     <para>这里我们定义了 pySvnManager 的需要用到的认证插件。</para>
     

@@ -22,7 +22,7 @@
     <para>BaseController 是所有控制器的基类，在该基类增加授权功能，
       会自动为其他控制器所使用。BaseController 的代码在文件 <filename>lib/base.py</filename> 中。</para>
     
-    <screen>
+    <programlisting>
 class BaseController(WSGIController):
     requires_auth = []
 
@@ -37,7 +37,7 @@ class BaseController(WSGIController):
                 session['path_before_login'] = request.path_info
                 session.save()
                 return redirect_to(h.url_for(controller='security'))
-</screen>
+</programlisting>
 
     <para>从BaseController 继承的类，可以设置 requires_auth 来增加授权。
       requires_auth 可以为 True 或者是一个包含要进行授权的动作列表。如果需要授权，
@@ -51,10 +51,10 @@ class BaseController(WSGIController):
     
     <para>在需要增加授权的控制器中增加requires_auth的属性。</para>
     
-    <screen>
+    <programlisting>
 class CheckController(BaseController):
     requires_auth = True
-</screen>
+</programlisting>
 
   </sect2>
   
@@ -99,7 +99,7 @@ class CheckController(BaseController):
     
     <para>在控制器的测试用例基类TestController中加上login方法，以简化登录调用：</para>
     
-    <screen>
+    <programlisting><![CDATA[
 class TestController(TestCase):
     ...
     def login(self, username, password=""):
@@ -111,17 +111,17 @@ class TestController(TestCase):
             password = d.get(username,'')
         form['password'] = password
         form.submit()
-</screen>
+]]></programlisting>
 
     <para>在测试用例中调用login方法：</para>
     
-    <screen><![CDATA[
+    <programlisting><![CDATA[
 self.login('root')
 res = self.app.get(url_for(controller='check')) 
 assert res.status == 200 
 assert '''<input type="submit" name="submit" value='Check Permissions'>''' in res.body 
 assert res.c.reposlist == ['/', u'repos1', u'repos2', u'repos3', u'document']
-]]></screen>
+]]></programlisting>
   
   </sect2>
   
