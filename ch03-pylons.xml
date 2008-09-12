@@ -8,25 +8,38 @@
 <sect1 id="psm.pylons">
   <title>华丽外衣——Pylons造</title>
   
-  <para>在接触Pylons和其他MVC框架之前，对Pythons的Web编程一直感到比较恐惧，
-    因为看过MoinMoin的代码，要为每一种协议（CGI, FastCGI, mod_python,
-    WSGI）写相应的处理代码，实在是麻烦透顶。还好有了Pylons等Web编程框架，
-    为我们屏蔽掉协议一层的复杂度。</para>
+  <para>在接触 Pylons 和其他 MVC 框架之前，对 Python 的 Web 编程一直感到比较恐惧，
+    因为看过 <application>MoinMoin</application> 的代码，
+    要为每一种协议（CGI, FastCGI, mod_python, WSGI）写相应的处理代码，
+    实在是麻烦透顶。还好有了Pylons等Web编程框架，为我们屏蔽了协议一层的复杂度。</para>
   
-  <para>Pylons实现了MVC架构，在使用习惯上和ROR非常类似，因此从学习成本上考虑，
-    我选择了Pylons。</para>
+  <para>Pylons 实现了 MVC 架构，在使用习惯上和 ROR 非常类似，因此从学习成本上考虑，
+    我选择了 Pylons。</para>
   
   <!-- ================================================================= -->
   <sect2 id="psm.pylons.basic">
-    <title>建立Web应用框架</title>
+    <title>建立 Web 应用框架</title>
 
-    <para>我们的应用定名为pySvnManager。建立同名的Pylons框架：</para>
+    <para>我们的应用定名为 pySvnManager。建立同名的 Pylons 框架：</para>
     
     <screen>
 $ <emphasis>paster create -t pylons pySvnManager</emphasis>
+Selected and implied templates:
+Pylons#pylons  Pylons application template
+
+Variables:
+egg:      pySvnManager
+package:  pysvnmanager
+project:  pySvnManager
+Enter template_engine (mako/genshi/jinja/etc: Template language) ['mako']:
+Enter sqlalchemy (True/False: Include SQLAlchemy 0.4 configuration) [False]:
+Creating template pylons
+Creating directory ./pySvnManager
+&hellip;
 $ <emphasis>cd pySvnManager</emphasis>
 $ <emphasis>ls -F</emphasis>
-development.ini  docs/  MANIFEST.in  pysvnmanager/  pySvnManager.egg-info/  README.txt  setup.cfg  setup.py  test.ini
+development.ini  ez_setup.py  pysvnmanager/           README.txt  setup.py
+docs/            MANIFEST.in  pySvnManager.egg-info/  setup.cfg   test.ini
 </screen>
 
     <para>启动Web应用：</para>
@@ -35,18 +48,20 @@ development.ini  docs/  MANIFEST.in  pysvnmanager/  pySvnManager.egg-info/  READ
 $ <emphasis>paster serve --reload development.ini</emphasis>
 Starting subprocess with file monitor
 Starting server in PID 817.
-serving on 0.0.0.0:5000 view at http://127.0.0.1:5000
+serving on http://127.0.0.1:5000
 </screen>
 
     <para>用浏览器访问 http://127.0.0.1:5000 会看到一个网页。这个网页实际上调用的是 
-      public/index.html 文件。如果删除该文件，则浏览器显示404错误（网页未找到）。</para>
+      <filename>public/index.html</filename> 文件。如果删除该文件，则浏览器显示
+      404错误（网页未找到）。</para>
     
     <!-- =============================================================== -->
     <sect3 id="psm.pylons.basic.controller">
       <title>理解控制器</title>
       
-      <para>下面用命令创建控制器check，会产生两个文件，一个是控制器文件本身：
-        controllers/check.py，另外一个是单元测试文件：tests/functional/test_check.py。</para>
+      <para>下面用命令创建控制器 check，会产生两个文件，一个是控制器文件本身：
+        <filename>controllers/check.py</filename>，另外一个是单元测试文件：
+        <filename>tests/functional/test_check.py</filename>。</para>
       
       <screen>
 $ <emphasis>paster controller check</emphasis>
@@ -55,20 +70,20 @@ Creating /home/jiangxin/pyenv/pySvnManager/pysvnmanager/tests/functional/test_ch
 </screen>
 
       <para>用浏览器访问URL：http://127.0.0.1:5000/check/ 会看到Hello World。
-        我们追根溯源，会看到controllers/check.py中的代码：</para>
+        我们追根溯源，会看到 <filename>controllers/check.py</filename> 中的代码：</para>
       
-      <screen>
+      <programlisting><![CDATA[
 class CheckController(BaseController):
 
     def index(self):
         return 'Hello World'
-</screen>
+]]></programlisting>
       
-      <para>哦，原理如此。Pylons已经将URL到代码的映射搞定！就是将浏览器对URL
+      <para>哦，原理如此。Pylons 已经将 URL到代码的映射搞定！就是将浏览器对 URL
         的访问映射到控制器代码，再由控制器处理后将结果显示给浏览器。
         控制器调用实现逻辑（即Model），然后把从Model获取的结果填充到模板（View）中，
-        于是MVC便实现了逻辑和展现分离。Pylons框架实现的将URL映射到控制器代码，
-        和Windows下VC/Delphi等GUI编程中将事件（鼠标、按钮等）映射到对应的代码是多么的近似。</para>
+        于是 MVC 便实现了逻辑和展现分离。Pylons 框架实现的将URL映射到控制器代码，
+        和 Windows 下 VC/Delphi 等GUI编程中将事件（鼠标、按钮等）映射到对应的代码是多么的近似。</para>
       
     </sect3>
     
@@ -76,21 +91,27 @@ class CheckController(BaseController):
     <sect3 id="psm.pylons.basic.routing">
       <title>修改控制器映射</title>
       
-      <para>还记得我们已经删除了public/index.html文件么？我们现在通过修改控制器映射，
-        将Web应用的缺省首页指向我们新建立的controller。
-        要修改的文件就是： config/routing.py</para>
+      <para>还记得我们已经删除了 <filename>public/index.html</filename> 文件么？
+        我们现在通过修改控制器映射，将 Web 应用的缺省首页指向我们新建立的 controller。
+        要修改的文件就是： <filename>config/routing.py</filename></para>
       
-      <screen>
-20 map.connect('', controller='check', action='index')
-21 map.connect(':controller/:action/:id')
-22 map.connect('*url', controller='template', action='view')
-</screen>
+      <programlisting>
+18     map.connect('/error/{action}', controller='error')
+19     map.connect('/error/{action}/{id}', controller='error')
+20
+21     # CUSTOM ROUTES HERE
+22     <emphasis>map.connect('/', controller='check', action='index')</emphasis>
+23
+24     <emphasis>map.connect('/{controller}')</emphasis>
+25     map.connect('/{controller}/{action}')
+26     map.connect('/{controller}/{action}/{id}')
+</programlisting>
 
-      <para>第20行是我们新增的，告诉Pylons，将缺省的主页定位到名为check的控制器的
-        index方法（动作）。</para>
+      <para>第22行是我们新增的，告诉Pylons，将缺省的主页定位到名为 check 的控制器的
+        <methodname>index</methodname> 方法（动作）。</para>
       
-      <para>我们打开浏览器访问 http://127.0.0.1:5000/ 会自动定位到 
-        http://127.0.0.1:5000/check/index 。</para>
+      <para>我们打开浏览器访问 <uri>http://127.0.0.1:5000/</uri> 会自动定位到 
+        <uri>http://127.0.0.1:5000/check/index</uri> 。</para>
       
     </sect3>
     
@@ -98,27 +119,34 @@ class CheckController(BaseController):
     <sect3 id="psm.pylons.basic.model">
       <title>加入模组和单元测试</title>
 
-      <para>把我们已经开发完毕的svnauthz模组及其单元测试放到pySvnManager的代码树中，
-        因为svnauthz和pySvnManager的耦合很紧，没有必要单独维护svnauthz模组。</para>
+      <para>把我们已经开发完毕的 <package>svnauthz</package> 模组及其单元测试放到
+        <package>pySvnManager</package> 的代码树中，因为 <classname>svnauthz</classname>
+        和 <package>pySvnManager</package> 的耦合很紧，没有必要单独维护 
+        <package>svnauthz</package> 模组。</para>
       
-      <para>pySvnManager/model 目录是放置模组的地方，将svnauthz的模组放在该目录下。</para>
+      <para><filename>pySvnManager/model</filename> 目录是放置模组的地方，
+        将 <package>svnauthz</package> 的模组放在该目录下。</para>
       
-      <para>至于单元测试用例，则应该拷贝到pysvnmanager/tests 目录下。该目录下有文件 
-        test_models.py，就是用于测试模组的。我们先参考 test_models.py 
-        文件的格式改造我们原来的模组测试用例test_svnauthz.py，之后再覆盖掉 
-        test_models.py 文件。新的模组单元测试框架形如：</para>
+      <para>至于单元测试用例，则应该拷贝到 <filename>pysvnmanager/tests</filename> 
+        目录下。该目录下有文件 <filename>test_models.py</filename>，就是用于测试模组的。
+        我们可以用 <filename>test_svnauthz.py</filename> 覆盖
+        空文件 <filename>test_models.py</filename> ，并在该文件中设置 Python 包含路径，
+        以便能成功包含要测试的模组：</para>
       
-      <screen>
+      <programlisting>
 1 #!/usr/bin/env python
 2 # -*- coding: utf-8 -*-
-3 from pysvnmanager.tests import *
-4 from pysvnmanager import model
-5 from pysvnmanager.model.svnauthz import *
-</screen>
+&hellip; 
+20 import os
+21 import sys
+22 sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+23
+24 from pysvnmanager.tests import *
+25 from pysvnmanager import model
+26 from pysvnmanager.model.svnauthz import *
+</programlisting>
 
-      <para>其中第五行是新增的。</para>
-      
-      <para>实验一下nosetests是否依然可靠运行。</para>
+      <para>实验一下 <command>nosetests</command> 是否依然可靠运行。</para>
       
       <screen>
 $ <emphasis>nosetests</emphasis>
@@ -139,18 +167,18 @@ OK
 
     <sidebar>
       <figure id="psm.pylons.controller.check.fig1">
-        <title>控制器check的MVC框架示意图</title>
+        <title>控制器 check 的 MVC 框架示意图</title>
         <graphic fileref="images/check_controller.png"/>
       </figure>
     </sidebar>
     
     <orderedlist>
       <listitem>
-        <para>路由：用户访问URL或提交表单，由Pylons负责将请求路由至控制器中的同名方法；</para>
+        <para>路由：用户访问URL或提交表单，由 Pylons 负责将请求路由至控制器中的同名方法；</para>
       </listitem>
       
       <listitem>
-        <para>调用模组：控制器访问模组svnauthz的相关调用，调用结果返回给控制器；</para>
+        <para>调用模组：控制器访问模组 <package>svnauthz</package> 的相关调用，调用结果返回给控制器；</para>
       </listitem>
       
       <listitem>
@@ -172,16 +200,17 @@ OK
       <sect4 id="psm.pylons.user.to.controller">
         <title>控制器获取用户请求</title>
 
-        <para>无论用户使用POST或者GET方式传递请求，都可以用request.params获取。</para>
+        <para>无论用户使用POST或者GET方式传递请求，都可以用 
+          <varname>request.params</varname> 获取。</para>
         
-        <screen>
+        <programlisting><![CDATA[
 d = request.params  # request.params 是包含用户传参的dict
 
 if d.get('userinput') == 'manual':
     username = d.get('username')     # 从文本框获取用户手工输入的用户名
 else:
     username = d.get('userselector') # 从下拉框选择的用户名
-</screen>
+]]></programlisting>
 
       </sect4>
 
@@ -189,12 +218,12 @@ else:
       <sect4 id="psm.pylons.controller.to.template">
         <title>控制器向视图模板传参</title>
 
-        <screen>
-c.access_map_msg ="&lt;pre&gt;"
+        <programlisting><![CDATA[
+c.access_map_msg ="<pre>"
 c.access_map_msg+="\n\n".join(self.authz.get_access_map_msgs(username, repos))
-c.access_map_msg+="&lt;/pre&gt;"
+c.access_map_msg+="</pre>"
 return render('/check/index.mako')
-</screen>
+]]></programlisting>
 
 
       </sect4>
@@ -203,16 +232,16 @@ return render('/check/index.mako')
       <sect4 id="psm.pylons.template.var">
         <title>视图模板用参数填充</title>
         
-        <screen>
-&lt;input type="submit" name="submit" value="提交"&gt;
+        <programlisting><![CDATA[
+<input type="submit" name="submit" value="提交">
 ${h.end_form()}
   
-&lt;hr&gt;
+<hr>
 ${c.access_right_msg}
-&lt;pre&gt;
+<pre>
   ${c.access_map_msg}
-&lt;/pre&gt;
-</screen>
+</pre>
+]]></programlisting>
 
       </sect4>
       
@@ -280,8 +309,8 @@ ${c.access_right_msg}
         不过是Python语言的。模板文件的主体依旧是HTML，可以在模板中用“&lt;% %&gt;”
           语法嵌入Python代码。例如：</para>
 
-      <screen>
-&lt;%
+      <programlisting><![CDATA[
+<%
 userlist = [[u'请选择...', '...'],
             [u'所有用户（含匿名）', '*'],
             [u'注册用户', '$authenticated'],
@@ -291,7 +320,7 @@ for i in c.userlist:
         continue
     if i[0] == '@':
         userlist.append([u'团队:'+i[1:], i])
-    elif i[0] == '&amp;':
+    elif i[0] == '&':
         userlist.append([u'别名:'+i[1:], i])
     else:
         userlist.append([i, i])
@@ -305,19 +334,19 @@ for i in c.reposlist:
 pathlist = [[u'所有路径...', '*'],]
 for i in c.pathlist:
     pathlist.append([i, i])
-%&gt;
-</screen>
+%>
+]]></programlisting>
 
       <para>可以用“${expression}”将页面Python代码的或者Controller
         传递的变量/表达式的值直接嵌入到模板中输出。例如：</para>
       
-      <screen>
-&lt;input type="radio" name="reposinput" value="select" 
-       ${c.checked_reposinput_select}&gt; 选择代码库
-  &lt;select name="reposselector" size="0" onFocus="select_repos(this.form)"&gt;
+      <programlisting><![CDATA[
+<input type="radio" name="reposinput" value="select" 
+       ${c.checked_reposinput_select}> 选择代码库
+  <select name="reposselector" size="0" onFocus="select_repos(this.form)">
     ${h.options_for_select(reposlist, c.selected_repos)}
-  &lt;/select&gt;
-</screen>
+  </select>
+]]></programlisting>
 
     </sect3>
     
@@ -325,7 +354,7 @@ for i in c.pathlist:
     <sect3 id="psm.pylons.controller.method.index">
       <title>控制器的index方法</title>
 
-      <screen>
+      <programlisting><![CDATA[
 class CheckController(BaseController):
     
     def __init__(self):
@@ -338,7 +367,7 @@ class CheckController(BaseController):
     
     def index(self):
         return render('/check/index.mako')
-</screen>
+]]></programlisting>
 
       </sect3>
       
@@ -420,13 +449,38 @@ class CheckController(BaseController):
     ${h.javascript_include_tag(builtins=True)}
 ]]></screen>
         
-        <para>实际上会在页面中产生下面两个JavaScrip包含语句：</para>
+      <para>实际上会在页面中产生下面两个JavaScrip包含语句：</para>
         
-        <screen><![CDATA[
+      <screen><![CDATA[
     <script src="/javascripts/prototype.js" type="text/javascript"></script> 
     <script src="/javascripts/scriptaculous.js" type="text/javascript"></script>
 ]]></screen>
   
+      <sidebar>
+        <para>最新版本的 Pylons 使用 0.6 版本的 <package>WebHelpers</package>，
+          不建议使用 <package>webhelpers.rails</package>，甚至在未来版本去掉
+          <package>webhelpers.rails</package>。也不再自动 import 
+          <package>webhelpers.rails</package>。对于要用到的 webhelpers 方法，
+          需要显示的声明。参见文件 <filename>lib/helpers.py</filename>。</para>
+        
+        <programlisting>
+from routes import url_for, redirect_to
+from webhelpers.html import escape, HTML, literal, url_escape
+from webhelpers.html.tags import *
+from webhelpers.rails.prototype import link_to_remote, form_remote_tag
+from webhelpers.rails.scriptaculous import visual_effect
+from webhelpers.rails.asset_tag import javascript_include_tag, stylesheet_link_tag
+</programlisting>
+
+         <para>相关的 prototype 和 scriptaculous JavaScript 脚本，在新版的 Pylons
+           中也不提供，需要从相关站点下载，复制到 <filename>public/javascripts/</filename>
+           目录下。</para>
+
+         <para>建议逐步将 webhelpers.rails 调用替换。建议使用 Fork JavaScript 框架
+           取代 Prototype 的 JavaScript 框架。</para>
+       
+       </sidebar>
+      
     </sect3>
     
     

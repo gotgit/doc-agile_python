@@ -21,12 +21,21 @@
   <articleinfo>
     <title>敏捷 Web 开发实践</title>
     <subtitle>—— pySvnManager 项目实战</subtitle>
-    <author><firstname><ulink url="http://www.ossxp.com"/>www.ossxp.com</firstname></author>
+    <author><firstname><ulink url="http://www.ossxp.com"/></firstname></author>
     
     <affiliation>
       <orgname>&orgname;</orgname>
-      <address><link><uri>http://www.ossxp.com</uri></link></address>
+      <address><email>worldhello.net AT gmail.com</email></address>
     </affiliation>
+
+    <revhistory>
+      <revision>
+        <revnumber>0.2</revnumber>
+        <date>2008/09/12</date>
+        <authorinitials>&author;</authorinitials>
+        <revremark>随 Pylons 升级为 0.9.7，pySvnManager 升级为 0.3。修改 WebHelpers 以及 routing 等相关内容。</revremark>
+      </revision>
+    </revhistory>
 
     <revhistory>
       <revision>
@@ -38,10 +47,11 @@
     </revhistory>
 
     <abstract>
-      <para>敏捷也许就是保障项目成功的“银弹”。笔者通过最近完成的一个小项目切身体验了一下
-        Python 语言在Web敏捷开发上的强大力量，愿与您共享。</para>
+      <para><emphasis>敏捷</emphasis>也许就是保障项目成功的“银弹”。
+        笔者通过最近完成的一个小项目切身体验了一下 Python 语言在
+        Web 敏捷开发上的强大力量，愿与您共享。</para>
 
-      <para>（版本号: 0.1.&doc.revision;，最后更新时间: &doc.lastchange;）</para>
+      <para>（版本号: 0.2.&doc.revision;，最后更新时间: &doc.lastchange;）</para>
   </abstract>
   
 </articleinfo>

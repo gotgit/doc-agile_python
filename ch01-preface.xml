@@ -13,7 +13,7 @@
     项目首页：<ulink url="http://pySvnManager.sf.net"/>。该项目从一开始，
     就采用了测试驱动开发（TDD）技术，通过一系列的迭代最终敏捷的实现了预期的需求。</para>
   
-  <para>在该项目中采用了Python最新流行的MVC框架：Pylons。并在 Web 页面中大量使用了
+  <para>在该项目中采用了 Python 最新流行的 MVC 框架：Pylons。并在 Web 页面中大量使用了
     AJAX 技术。本文涉及到的技术术语有：敏捷, TDD, MVC, 单元测试, 代码覆盖测试, 
     AJAX, 重构, i18n, 开放源代码。</para>
   
@@ -86,8 +86,8 @@ user1 =
     
     <para>其中1和2的错误会造成Subversion服务中断故障！3和4的问题如果不经过测试很难发现！
       在我们为客户实施Subversion技术支持服务过程中，发现了用户迫切需要容错性强的
-      授权管理工具，于是便有了开发图形化管理界面的打算。选择Python是因为Python语言的魅力
-      以及Python开发过程的高效。</para>
+      授权管理工具，于是便有了开发图形化管理界面的打算。选择 Python 是因为 Python
+      语言的魅力以及 Python 开发过程的高效。</para>
   
   </sect2>
   
@@ -113,16 +113,16 @@ Reading https://sourceforge.net/projects/pysvnmanager
 
       <para>理论上很简单的东西，却奈何不了复杂的现实：</para>
 
-      <para>在项目刚刚开发完成，就出现了相当长一段时间的 SourceForge.net 无法访问！
+      <para>在项目刚刚开发完成，就出现了相当长一段时间的 <uri>SourceForge.net</uri> 无法访问！
         导致 <command>easy_install</command> 为了搜索最新版本，在连接到 
-        <ulink url="http://SourceForge.net"/> 时发生了死锁而阻塞。
-        虽然我打算把项目移到别处，但发现一些依赖的包如: python-ldap 
-        也是要访问 SourceForge.net网站。因此我取消了搬家的打算，耐心且无助的等待解封。
+        <ulink url="http://pysvnmanager.sourceforge.net"/> 时发生了死锁而阻塞。
+        虽然我打算把项目移到别处，但发现一些依赖的包如: <package>python-ldap</package>
+        也是要访问 <uri>SourceForge.net</uri> 网站。因此我取消了搬家的打算，耐心且无助的等待解封。
         同时将代码镜像在网址：<ulink url="http://svn.worldhello.net/svn/pysvnmanager"/>
-        上，供不能访问 <ulink url="http://SourceForge.net"/> 的用户参考。</para>
+        上，供不能访问 <ulink url="http://pysvnmanager.sourceforge.net"/> 的用户参考。</para>
 
       <para>如果遇到阻塞，则需要花费更多的时间，手工下载软件包。<command>easy_install</command>
-        也可以安装下载到本地的软件包。</para>
+        也可以安装已经下载到本地的软件包。</para>
       
       <screen>
 $ <emphasis>wget http://pypi.python.org/packages/source/p/pySvnManager/pySvnManager... </emphasis>
@@ -169,25 +169,25 @@ Running setup_config() from pysvnmanager.websetup
       
       <itemizedlist>
         <listitem>
-          <para><emphasis>config.ini ：</emphasis>
+          <para><emphasis><filename>config.ini</filename> ：</emphasis>
             
             应用默认运行于5000端口，可以在此文件中定制</para>
         </listitem>
         
         <listitem>
-          <para><emphasis>config/localconfig.py ：</emphasis>
+          <para><emphasis><filename>config/localconfig.py</filename> ：</emphasis>
             
-            设置应用缺省的认证方式，缺省用config/svn.passwd口令认证</para>
+            设置应用缺省的认证方式，缺省用 <quote><filename>config/svn.passwd</filename></quote> 口令认证</para>
         </listitem>
         
         <listitem>
-          <para><emphasis>config/svn.passwd ：</emphasis>
+          <para><emphasis><filename>config/svn.passwd</filename> ：</emphasis>
             
             缺省该口令文件内所有用户的口令均为 "guess"</para>
         </listitem>
         
         <listitem>
-          <para><emphasis>config/svn.access ：</emphasis>
+          <para><emphasis><filename>config/svn.access</filename> ：</emphasis>
             
             svn路径授权文件，本应用要处理的文件。注意该文件开头的注释是版本号和版本库管理员帐号设置，
             不要随意删除！</para>

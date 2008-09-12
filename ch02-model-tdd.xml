@@ -11,7 +11,9 @@
   <para><emphasis>忘记Web吧：</emphasis></para>
   
   <para>我们要开发出一套Web应用，但首先要忘掉Web。这看似矛盾，却正是MVC的要求和精髓。
-    即对核心算法进行抽象，先实现Model，之后再去考虑Controller（控制器）和View（Web展现）。</para>
+    即对核心算法进行抽象，先实现 <literal>Model</literal>，之后再去考虑
+    <literal>Controller</literal>（控制器）和 
+    <literal>View</literal>（Web展现）。</para>
   
   <para><emphasis>忘记详细设计吧：</emphasis></para>
   
@@ -36,10 +38,12 @@
       
       <para>Subversion路径授权中，用户对象（用户/别名/组）显然是最重要的基本单位，
         每一条授权策略都包含一个用户对象。那么我们第一个迭代就实现用户对象：
-        User类，Alias类，Group类。</para>
+        <classname>User</classname> 类，<classname>Alias</classname> 类，
+        <classname>Group</classname> 类。</para>
       
-      <para>假设svnauthz的 User, Alias, Group 类已经完成，我们期望他们实现的功能是什么呢？
-        于是在纸上写下假想任务目标（模拟python交互式命令行）：</para>
+      <para>假设 <package>svnauthz</package> 的 <classname>User</classname>, 
+        <classname>Alias</classname>, <classname>Group</classname> 类已经完成，
+        我们期望他们实现的功能是什么呢？于是在纸上写下假想任务目标（模拟python交互式命令行）：</para>
       
       <programlisting>
 &gt;&gt;&gt; <emphasis>from svnauthz import User, Group, Alias</emphasis>
@@ -125,7 +129,7 @@ ImportError: No module named svnauthz
     <sect3 id="psm.tdd.iter1.unittest.pass">
       <title>编写模组，使测试用例通过</title>
 
-      <para>之前执行测试用例失败，报告：找不到 svnauthz 模组。因为模组还没有创建，当然找不到了。
+      <para>之前执行测试用例失败，报告：找不到 <classname>svnauthz</classname> 模组。因为模组还没有创建，当然找不到了。
         于是创建一个空的模组文件 <filename>svnauthz.py</filename>。</para>
       
       <screen>
@@ -147,10 +151,11 @@ NameError: global name 'User' is not defined
 ...
 </screen>
       
-      <para>太棒了，我们前进了一步，因为失败的原因已经不同了。错误报告说：User类未定义。
-        于是我们写一些代码，让测试用例通过。</para>
+      <para>太棒了，我们前进了一步，因为失败的原因已经不同了。错误报告说：
+        <classname>User</classname>类未定义。于是我们写一些代码，
+        让测试用例通过。</para>
       
-      <para>svnauthz.py第一个版本的代码如下：</para>
+      <para><filename>svnauthz.py</filename> 第一个版本的代码如下：</para>
       
       <programlisting><![CDATA[
 1 #!/usr/bin/env python
@@ -193,25 +198,25 @@ NameError: global name 'Alias' is not defined
 ...
 </screen>
 
-      <para>好的，我们已经有一个测试用例（testUser）通过了！其他的测试用例呢？
-        先把他们注释掉，以便提前感受一下完全通过测试的滋味。</para>
+      <para>好的，我们已经有一个测试用例（<classname>testUser</classname>）通过了！
+        其他的测试用例呢？先把他们注释掉，以便提前感受一下完全通过测试的滋味。</para>
       
       <para>注意：我所说的注释掉不是删除代码，也不是把每一行变为注释，
         而是非常简单的将暂不考虑的测试用例改名。</para>
       
       <itemizedlist>
         <listitem>
-          <para>将 def testAlias(self) 改为 def _testAlias(self)</para>
+          <para>将 <code>def testAlias(self)</code> 改为 <code>def _testAlias(self)</code></para>
         </listitem>
         
         <listitem>
-          <para>将 def testGroup(self) 改为 def _testGroup(self)</para>
+          <para>将 <code>def testGroup(self)</code> 改为 <code>def _testGroup(self)</code></para>
         </listitem>
         
       </itemizedlist>
       
       <note>
-        <para>注：只要不是以 test 开头都好。</para>
+        <para>注：只要不是以 <literal>test</literal> 开头都好。</para>
       </note>
       
       <para>再次执行测试用例，太棒了完全通过！</para>
@@ -232,8 +237,9 @@ OK
     <sect3 id="psm.tdd.iter1.code.coverage">
       <title>完善测试用例</title>
 
-      <para>检查代码覆盖度，在Python下有coverage包可用。用easy_install安装之后，
-        就可以使用coverage命令了。</para>
+      <para>检查代码覆盖度，在 Python 下有 <package>coverage</package> 包可用。
+        用 <command>easy_install</command> 安装之后，
+        就可以使用 <command>coverage</command> 命令了。</para>
       
       <screen>
 $ <emphasis>coverage -x test_svnauthz.py</emphasis>
@@ -250,18 +256,19 @@ Name       Stmts   Exec  Cover   Missing
 svnauthz       8      7    87%   15
 </screen>
 
-      <para>哦，看来我们离完美还是差了一点。从coverage的输出中可以看出，
-        我们的测试用例并没有对svnauthz.py的代码测试完全：第15行没有测试到。
-        也就是用空的用户名创建User对象，应该抛出异常。</para>
+      <para>哦，看来我们离完美还是差了一点。从 <command>coverage</command> 
+        的输出中可以看出，我们的测试用例并没有对 <filename>svnauthz.py</filename> 
+        的代码测试完全：第15行没有测试到。也就是用<emphasis>空的用户名</emphasis>创建 
+        <classname>User</classname> 对象，应该抛出异常。</para>
       
-      <para>我们在testUser用例的最后补充一条断言：</para>
+      <para>我们在 <methodname>testUser</methodname> 用例的最后补充一条断言：</para>
       
       <programlisting>
 def testUser(self):
     user1 = User('Tom')
     self.assert_(str(user1) == 'Tom')
-    self.assertRaises(Exception, User, " ")
-  </programlisting>
+    <emphasis>self.assertRaises(Exception, User, " ")</emphasis>
+</programlisting>
 
       <para>再次检查一下测试用例对代码的覆盖度。哇，100% 通过！</para>
 
@@ -282,10 +289,11 @@ svnauthz       8      8   100%
 
     <!-- =============================================================== -->
     <sect3 id="psm.tdd.iter1.nosetests">
-      <title>用例管理和nosetests</title>
+      <title>用例管理和 nosetests</title>
 
       <para>目前来讲，代码和测试用例共存于同一个目录。我们重构一下，将模组代码放在 
-        src目录，将测试用例放在 tests 目录。</para>
+        <filename>src</filename> 目录，将测试用例放在 <filename>tests</filename>
+        目录。</para>
       
       <para>执行测试用例：</para>
       
@@ -297,7 +305,8 @@ Traceback (most recent call last):
 ImportError: No module named svnauthz
 </screen>
 
-      <para>在 test_svnauthz.py 文件头增加如下语句，设置Python模组查询路径：</para>
+      <para>在 <filename>test_svnauthz.py</filename> 文件头增加如下语句，
+        设置 Python 模组查询路径：</para>
       
       <programlisting>
 import sys
@@ -306,12 +315,13 @@ sys.path.insert(0,'src')
 
       <para>测试用例又可以成功执行了。</para>
       
-      <para>tests目录下如果有多个测试用例文件，难道要一个一个去调用么？或者用
-        unittest.TestSuite去组织测试用例？其实不用这么麻烦，nosetests
+      <para>目录 <filename>tests</filename> 下如果有多个测试用例文件，
+        难道要一个一个去调用么？或者用 <classname>unittest.TestSuite</classname> 
+        去组织测试用例？其实不用这么麻烦，<application>nosetests</application>
         可以自动发现目录下的测试用例，并执行。</para>
       
-      <para>鼻子测试（nosetests）是一个主动发现测试用例的unittest扩展。
-        可以用easy_install 来安装:</para>
+      <para>鼻子测试（<application>nosetests</application>）是一个主动发现测试用例的
+        unittest 扩展。可以用 <command>easy_install</command> 来安装:</para>
       
       <screen>
 $ <emphasis>easy_install nose</emphasis>
@@ -346,15 +356,18 @@ OK
     <sect2 id="psm.tdd.continued">
       <title>持续迭代</title>
 
-      <para>持续迭代，完成User, Group, Alias, Rules, Module, Repos, SvnAuthz等模组。</para>
+      <para>持续迭代，完成 <classname>User</classname>, <classname>Group</classname>, 
+        <classname>Alias</classname>, <classname>Rules</classname>, 
+        <classname>Module</classname>, <classname>Repos</classname>, 
+        <classname>SvnAuthz</classname> 等模组。</para>
       
     </sect2>
     
     <!-- ================================================================= -->
     <sect2 id="psm.tdd.final">
-      <title>最终完成的svnauthz</title>
+      <title>最终完成的 svnauthz</title>
       
-      <para>在Python交互模式下测试svnauthz模组：</para>
+      <para>在 Python 交互模式下测试 <classname>svnauthz</classname> 模组：</para>
       
       <screen>
 &gt;&gt;&gt; <emphasis>buff = '''# admin: / = administrator</emphasis>
@@ -395,7 +408,7 @@ True
 ['@group1 = r', 'user3 = rw', '$authenticated = ', '&amp;admin = rw']
 </screen>
 
-    <para>现在是时候给 svnauthz 套上一个华丽一点的外衣了。</para>
+    <para>现在是时候给 <classname>svnauthz</classname> 套上一个华丽一点的外衣了。</para>
     
   </sect2>
 
