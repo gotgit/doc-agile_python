@@ -35,9 +35,7 @@
         <authorinitials>&author;</authorinitials>
         <revremark>随 Pylons 升级为 0.9.7，pySvnManager 升级为 0.3。修改 WebHelpers 以及 routing 等相关内容。</revremark>
       </revision>
-    </revhistory>
 
-    <revhistory>
       <revision>
         <revnumber>0.1</revnumber>
         <date>2008/07/20</date>
