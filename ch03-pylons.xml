@@ -79,7 +79,7 @@ class CheckController(BaseController):
         return 'Hello World'
 ]]></programlisting>
       
-      <para>哦，原理如此。Pylons 已经将 URL到代码的映射搞定！就是将浏览器对 URL
+      <para>哦，原来如此。Pylons 已经将 URL到代码的映射搞定！就是将浏览器对 URL
         的访问映射到控制器代码，再由控制器处理后将结果显示给浏览器。
         控制器调用实现逻辑（即Model），然后把从Model获取的结果填充到模板（View）中，
         于是 MVC 便实现了逻辑和展现分离。Pylons 框架实现的将URL映射到控制器代码，
